@@ -17,3 +17,4 @@ aws_region              = "us-east-1"
 
 aws_cloudtrail_name = "example-dev"
 s3_bucket_name = "cloudtrail"
+is_multi_region_trail = true
