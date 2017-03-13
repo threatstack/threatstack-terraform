@@ -6,6 +6,11 @@ variable "aws_account" {
   description = "Used for naming S3 bucket in tf_straycat_aws_s3"
 }
 
+variable "aws_account_id" {
+  type = "string"
+  description = "Used for CloudTrail role."
+}
+
 variable "aws_profile" {
   type = "string"
   description = "Used to configure AWS provider."
@@ -70,6 +75,7 @@ module "aws_cloudtrail" {
   include_global_service_events = "${var.include_global_service_events}"
   is_multi_region_trail         = "${var.enable_log_file_validation}"
   aws_account                   = "${var.aws_account}"
+  aws_account_id                = "${var.aws_account_id}"
   aws_region                    = "${var.aws_region}"
 }
 
@@ -85,6 +91,14 @@ output "cloudtrail_home_region" {
 
 output "cloudtrail_arn" {
   value = "${module.aws_cloudtrail.cloudtrail_arn}"
+}
+
+output "iam_role_cloudtrail_arn" {
+  value = "${module.aws_cloudtrail.iam_role_cloudtrail_arn}"
+}
+
+output "cloudwatch_log_group_arn" {
+  value = "${module.aws_cloudtrail.cloudwatch_log_group_arn}"
 }
 
 output "s3_bucket_id" {

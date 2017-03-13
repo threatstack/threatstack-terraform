@@ -9,6 +9,8 @@ Setup and manage CloudTrail for us.
 
 * ___aws_account:___ Name of AWS account.  Used to find remote state information and is prepended to bucket names.
 
+* ___aws_account_id:___ Account ID, used for CloudTrail integration.
+
 * ___aws_region:___ AWS region.  Used to find remote state.
 
 ### Optional
