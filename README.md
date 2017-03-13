@@ -1,4 +1,4 @@
-# straycat-terraform-aws-cloudtrail
+# terraform-example-aws-cloudtrail
 Setup and manage CloudTrail for us.
 
 ## Variables

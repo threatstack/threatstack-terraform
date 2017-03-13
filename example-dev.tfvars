@@ -4,16 +4,16 @@ terragrunt = {
     backend = "s3"
     config {
       encrypt = "true"
-      bucket  = "straycat-dhs-org-straycat-terraform"
+      bucket  = "example-com-example-dev-terraform"
       key     = "aws_cloudtrail.tfstate"
       region  = "us-east-1"
     }
   }
 }
 
-aws_account             = "straycat"  # AWS credentials profile name
-aws_profile             = "straycat"
+aws_account             = "example-dev"  # AWS credentials profile name
+aws_profile             = "example-dev"
 aws_region              = "us-east-1"
 
-aws_cloudtrail_name = "straycat"
+aws_cloudtrail_name = "example-dev"
 s3_bucket_name = "cloudtrail"

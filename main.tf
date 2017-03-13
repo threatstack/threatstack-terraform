@@ -3,7 +3,7 @@
 //Variables
 variable "aws_account" {
   type = "string"
-  description = "Used for naming S3 bucket in tf_straycat_aws_s3"
+  description = "Used for naming S3 bucket in tf_example_aws_s3"
 }
 
 variable "aws_account_id" {
@@ -18,7 +18,7 @@ variable "aws_profile" {
 
 variable "aws_region" {
   type = "string"
-  description = "Used for finding root state in tf_straycat_aws_s3"
+  description = "Used for finding root state in tf_example_aws_s3"
 }
 
 variable "aws_cloudtrail_name" {
@@ -67,7 +67,7 @@ provider "aws" {
 
 // Resources
 module "aws_cloudtrail" {
-  source                        = "github.com/tmclaugh/tf_straycat_aws_cloudtrail"
+  source                        = "github.com/threatstack/tf_example_aws_cloudtrail"
   aws_cloudtrail_name           = "${var.aws_cloudtrail_name}"
   s3_bucket_name                = "${var.s3_bucket_name}"
   enable_logging                = "${var.enable_logging}"
