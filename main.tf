@@ -54,7 +54,7 @@ variable "include_global_service_events" {
 
 variable "is_multi_region_trail" {
   description = "Whether the trail is created in all regions or just the current region."
-  default = false
+  default = true
 }
 
 
