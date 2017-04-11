@@ -6,11 +6,6 @@ variable "aws_account" {
   description = "Used for naming S3 bucket in tf_example_aws_s3"
 }
 
-variable "aws_account_id" {
-  type = "string"
-  description = "Used for CloudTrail role."
-}
-
 variable "aws_profile" {
   type = "string"
   description = "Used to configure AWS provider."
@@ -60,7 +55,7 @@ variable "is_multi_region_trail" {
 
 // Backend
 # NOTE: Backends cannot contain interpolations at this time. :-|
-terraform{
+terraform {
   backend "s3" {
     encrypt = "true"
     bucket  = "ts-demo-dev-terraform"
@@ -77,6 +72,17 @@ provider "aws" {
 }
 
 
+// Data
+data "terraform_remote_state" "root" {
+  backend = "s3"
+  config = {
+    bucket  = "${var.aws_account}-terraform"
+    key     = "root.tfstate"
+    region  = "${var.aws_region}"
+  }
+}
+
+
 // Resources
 module "aws_cloudtrail" {
   source                        = "../tf_threatstack_aws_cloudtrail"
@@ -87,7 +93,7 @@ module "aws_cloudtrail" {
   include_global_service_events = "${var.include_global_service_events}"
   is_multi_region_trail         = "${var.enable_log_file_validation}"
   aws_account                   = "${var.aws_account}"
-  aws_account_id                = "${var.aws_account_id}"
+  aws_account_id                = "${data.terraform_remote_state.root.aws_account_id}"
   aws_region                    = "${var.aws_region}"
 }
 
