@@ -58,6 +58,18 @@ variable "is_multi_region_trail" {
 }
 
 
+// Backend
+# NOTE: Backends cannot contain interpolations at this time. :-|
+terraform{
+  backend "s3" {
+    encrypt = "true"
+    bucket  = "ts-demo-dev-terraform"
+    key     = "aws_cloudtrail.tfstate"
+    region  = "us-east-1"
+  }
+}
+
+
 // AWS provider
 provider "aws" {
   profile = "${var.aws_profile}"
