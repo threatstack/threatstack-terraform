@@ -67,7 +67,7 @@ provider "aws" {
 
 // Resources
 module "aws_cloudtrail" {
-  source                        = "github.com/threatstack/tf_example_aws_cloudtrail"
+  source                        = "../tf_threatstack_aws_cloudtrail"
   aws_cloudtrail_name           = "${var.aws_cloudtrail_name}"
   s3_bucket_name                = "${var.s3_bucket_name}"
   enable_logging                = "${var.enable_logging}"
