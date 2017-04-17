@@ -1,5 +1,5 @@
-# terraform-example-aws-cloudtrail
-Setup and manage CloudTrail for us.
+# terraform-example-aws-cloudtrail-threatstack
+Setup Threat Stack <-> AWS integration
 
 ## Variables
 ### Required

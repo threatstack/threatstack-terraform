@@ -19,11 +19,13 @@ variable "aws_region" {
 variable "aws_cloudtrail_name" {
   type = "string"
   description = "Name of CloudTrail trail."
+  default = "ThreatStackIntegration"
 }
 
 variable "s3_bucket_name" {
   type = "string"
   description = "S3 Bucket for logs"
+  default = "threatstack-integration"
 }
 
 variable "s3_bucket_prefix" {
@@ -59,7 +61,7 @@ terraform {
   backend "s3" {
     encrypt = "true"
     bucket  = "ts-demo-dev-terraform"
-    key     = "aws_cloudtrail.tfstate"
+    key     = "aws_cloudtrail_threatstack.tfstate"
     region  = "us-east-1"
   }
 }
