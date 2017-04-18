@@ -33,13 +33,6 @@ data "template_file" "aws_sns_topic_policy" {
   template = "${file("${path.module}/aws_sns_topic_policy.tpl")}"
 }
 
-data "template_file" "aws_sqs_queue_policy" {
-  template = "${file("${path.module}/aws_sqs_queue_policy.tpl")}"
-  vars {
-    sns_arn = "${aws_sns_topic.sns.arn}"
-  }
-}
-
 data "template_file" "aws_iam_assume_role_policy" {
   template = "${file("${path.module}/aws_iam_assume_role_policy.tpl")}"
   vars {
@@ -79,21 +72,6 @@ resource "aws_sns_topic" "sns" {
 resource "aws_sns_topic_policy" "sns" {
   arn = "${aws_sns_topic.sns.arn}"
   policy = "${data.template_file.aws_sns_topic_policy.rendered}"
-}
-
-resource "aws_sqs_queue" "sqs" {
-  name = "${var.aws_sqs_queue_name}"
-}
-
-resource "aws_sqs_queue_policy" "sqs" {
-  queue_url = "${aws_sqs_queue.sqs.id}"
-  policy = "${data.template_file.aws_sqs_queue_policy.rendered}"
-}
-
-resource "aws_sns_topic_subscription" "sqs" {
-  topic_arn = "${aws_sns_topic.sns.arn}"
-  protocol = "sqs"
-  endpoint = "${aws_sqs_queue.sqs.arn}"
 }
 
 resource "aws_iam_role" "role" {
