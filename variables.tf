@@ -16,9 +16,9 @@ variable "aws_account" {
   description = "Used for naming S3 bucket in tf_example_aws_s3"
 }
 
-variable "aws_profile" {
+variable "aws_account_id" {
   type = "string"
-  description = "Used to configure AWS provider."
+  description = "AWS account ID"
 }
 
 variable "aws_region" {
