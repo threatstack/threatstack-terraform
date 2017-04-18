@@ -29,10 +29,6 @@ data "terraform_remote_state" "root" {
   }
 }
 
-data "template_file" "aws_sns_topic_policy" {
-  template = "${file("${path.module}/aws_sns_topic_policy.tpl")}"
-}
-
 data "template_file" "aws_iam_assume_role_policy" {
   template = "${file("${path.module}/aws_iam_assume_role_policy.tpl")}"
   vars {
@@ -62,16 +58,6 @@ module "aws_cloudtrail" {
   aws_account                   = "${var.aws_account}"
   aws_account_id                = "${data.terraform_remote_state.root.aws_account_id}"
   aws_region                    = "${var.aws_region}"
-}
-
-resource "aws_sns_topic" "sns" {
-  name = "${var.aws_sns_topic_name}"
-  display_name = "${var.aws_sns_topic_display_name}"
-}
-
-resource "aws_sns_topic_policy" "sns" {
-  arn = "${aws_sns_topic.sns.arn}"
-  policy = "${data.template_file.aws_sns_topic_policy.rendered}"
 }
 
 resource "aws_iam_role" "role" {
