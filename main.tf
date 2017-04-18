@@ -22,6 +22,18 @@ variable "aws_cloudtrail_name" {
   default = "ThreatStackIntegration"
 }
 
+variable "aws_sns_topic_name" {
+  type = "string"
+  description = "Name of SNS topic."
+  default = "ThreatStackIntegration"
+}
+
+variable "aws_sns_topic_display_name" {
+  type = "string"
+  description = "SNS topic display name"
+  default = "Threat Stack integration topic."
+}
+
 variable "s3_bucket_name" {
   type = "string"
   description = "S3 Bucket for logs"
@@ -84,6 +96,9 @@ data "terraform_remote_state" "root" {
   }
 }
 
+data "template_file" "aws_sns_topic_policy" {
+  template = "${file("${path.module}/aws_sns_topic_policy.tpl")}"
+}
 
 // Resources
 module "aws_cloudtrail" {
@@ -98,6 +113,17 @@ module "aws_cloudtrail" {
   aws_account_id                = "${data.terraform_remote_state.root.aws_account_id}"
   aws_region                    = "${var.aws_region}"
 }
+
+resource "aws_sns_topic" "sns" {
+  name = "${var.aws_sns_topic_name}"
+  display_name = "${var.aws_sns_topic_display_name}"
+}
+
+resource "aws_sns_topic_policy" "sns" {
+  arn = "${aws_sns_topic.sns.arn}"
+  policy = "${data.template_file.aws_sns_topic_policy.rendered}"
+}
+
 
 
 // Outputs
@@ -127,5 +153,9 @@ output "s3_bucket_id" {
 
 output "s3_bucket_arn" {
   value = "${module.aws_cloudtrail.s3_bucket_arn}"
+}
+
+output "sns_topic_arn" {
+  value = "${aws_sns_topic.sns.arn}"
 }
 
