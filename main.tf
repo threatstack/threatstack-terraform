@@ -1,6 +1,16 @@
 // Setup a default CloudTrail trail.
 
 //Variables
+variable "threatstack_account_id" {
+  type = "string"
+  description = "Threat Stack AWS account ID."
+}
+
+variable "threatstack_external_id" {
+  type = "string"
+  description = "Threat Stack AWS external ID."
+}
+
 variable "aws_account" {
   type = "string"
   description = "Used for naming S3 bucket in tf_example_aws_s3"
@@ -19,6 +29,12 @@ variable "aws_region" {
 variable "aws_cloudtrail_name" {
   type = "string"
   description = "Name of CloudTrail trail."
+  default = "ThreatStackIntegration"
+}
+
+variable "aws_iam_role_name" {
+  type = "string"
+  description = "Threat Stack IAM role Name"
   default = "ThreatStackIntegration"
 }
 
@@ -113,6 +129,22 @@ data "template_file" "aws_sqs_queue_policy" {
   }
 }
 
+data "template_file" "aws_iam_assume_role_policy" {
+  template = "${file("${path.module}/aws_iam_assume_role_policy.tpl")}"
+  vars {
+    threatstack_account_id = "${var.threatstack_account_id}"
+    threatstack_external_id = "${var.threatstack_external_id}"
+  }
+}
+
+data "template_file" "aws_iam_role_policy" {
+  template = "${file("${path.module}/aws_iam_role_policy.tpl")}"
+  vars {
+    sqs_queue_arn = "${aws_sqs_queue.sqs.arn}"
+    s3_resource = "${aws_sqs_queue.sqs.arn}/*"
+  }
+}
+
 
 // Resources
 module "aws_cloudtrail" {
@@ -153,6 +185,18 @@ resource "aws_sns_topic_subscription" "sqs" {
   endpoint = "${aws_sqs_queue.sqs.arn}"
 }
 
+resource "aws_iam_role" "role" {
+  name = "${var.aws_iam_role_name}"
+  assume_role_policy = "${data.template_file.aws_iam_assume_role_policy.rendered}"
+}
+
+resource "aws_iam_role_policy" "role" {
+  name = "${var.aws_iam_role_name}"
+  role = "${aws_iam_role.role.id}"
+
+  policy = "${data.template_file.aws_iam_role_policy.rendered}"
+}
+
 // Outputs
 output "cloudtrail_id" {
   value = "${module.aws_cloudtrail.cloudtrail_id}"
@@ -172,6 +216,14 @@ output "iam_role_cloudtrail_arn" {
 
 output "cloudwatch_log_group_arn" {
   value = "${module.aws_cloudtrail.cloudwatch_log_group_arn}"
+}
+
+output "iam_role_name" {
+  value = "${aws_iam_role.role.name}"
+}
+
+output "iam_role_arn" {
+  value = "${aws_iam_role.role.arn}"
 }
 
 output "s3_bucket_id" {
