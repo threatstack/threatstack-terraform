@@ -34,6 +34,12 @@ variable "aws_sns_topic_display_name" {
   default = "Threat Stack integration topic."
 }
 
+variable "aws_sqs_queue_name" {
+  type = "string"
+  description = "Name of SNS topic."
+  default = "ThreatStackIntegration"
+}
+
 variable "s3_bucket_name" {
   type = "string"
   description = "S3 Bucket for logs"
@@ -100,6 +106,14 @@ data "template_file" "aws_sns_topic_policy" {
   template = "${file("${path.module}/aws_sns_topic_policy.tpl")}"
 }
 
+data "template_file" "aws_sqs_queue_policy" {
+  template = "${file("${path.module}/aws_sqs_queue_policy.tpl")}"
+  vars {
+    sns_arn = "${aws_sns_topic.sns.arn}"
+  }
+}
+
+
 // Resources
 module "aws_cloudtrail" {
   source                        = "../tf_threatstack_aws_cloudtrail"
@@ -124,7 +138,20 @@ resource "aws_sns_topic_policy" "sns" {
   policy = "${data.template_file.aws_sns_topic_policy.rendered}"
 }
 
+resource "aws_sqs_queue" "sqs" {
+  name = "${var.aws_sqs_queue_name}"
+}
 
+resource "aws_sqs_queue_policy" "sqs" {
+  queue_url = "${aws_sqs_queue.sqs.id}"
+  policy = "${data.template_file.aws_sqs_queue_policy.rendered}"
+}
+
+resource "aws_sns_topic_subscription" "sqs" {
+  topic_arn = "${aws_sns_topic.sns.arn}"
+  protocol = "sqs"
+  endpoint = "${aws_sqs_queue.sqs.arn}"
+}
 
 // Outputs
 output "cloudtrail_id" {
@@ -157,5 +184,13 @@ output "s3_bucket_arn" {
 
 output "sns_topic_arn" {
   value = "${aws_sns_topic.sns.arn}"
+}
+
+output "sqs_queue_id" {
+  value = "${aws_sqs_queue.sqs.id}"
+}
+
+output "sqs_queue_arn" {
+  value = "${aws_sqs_queue.sqs.arn}"
 }
 
