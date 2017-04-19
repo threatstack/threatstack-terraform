@@ -51,30 +51,30 @@ module "threatstack_aws_integration" {
 
 
 ## Outputs
-* cloudtrail_arn: ARN of CloudTrail.
+* ___cloudtrail_arn:___ ARN of CloudTrail.
 
-* cloudtrail_home_region: Home region for CloudTrail
+* ___cloudtrail_home_region:___ Home region for CloudTrail
 
-* cloudtrail_id: CloudTrail ID. Name of CloudTrail without full ARN string.
+* ___cloudtrail_id:___ CloudTrail ID. Name of CloudTrail without full ARN string.
 
-* cloudwatch_log_group_arn: ARN of CloudWatch log group for cloudTrail events.
+* ___cloudwatch_log_group_arn:___ ARN of CloudWatch log group for cloudTrail events.
 
-* iam_role_arn: ARN of cross account IAM role granting Threat Stack access to environment.  (Enter this value into Threat Stack when setting up.)
+* ___iam_role_arn:___ ARN of cross account IAM role granting Threat Stack access to environment.  (Enter this value into Threat Stack when setting up.)
 
-* iam_role_name: Name of cross account IAM role granting Threat Stack access to environment.
+* ___iam_role_name:___ Name of cross account IAM role granting Threat Stack access to environment.
 
-* iam_role_cloudtrail_arn: ARN of IAM role allowing events to be logged to CloudWatch.
+* ___iam_role_cloudtrail_arn:___ ARN of IAM role allowing events to be logged to CloudWatch.
 
-* iam_role_cloudtrail_name: Name of IAM role allowing events to be logged to CloudWatch.
+* ___iam_role_cloudtrail_name:___ Name of IAM role allowing events to be logged to CloudWatch.
 
-* s3_bucket_arn: ARN of bucket for CloudTrail events.
+* ___s3_bucket_arn:___ ARN of bucket for CloudTrail events.
 
-* s3_bucket_id: Name of bucket for CloudTrail events.  (Enter this value into Threat Stack when setting up.)
+* ___s3_bucket_id:___ Name of bucket for CloudTrail events.  (Enter this value into Threat Stack when setting up.)
 
-* sns_topic_arn: ARN of SNS topic where CloudTrail events are forwarded to.
+* ___sns_topic_arn:___ ARN of SNS topic where CloudTrail events are forwarded to.
 
-* sqs_queue_arn: ARN of SQS queue Threat Stack reads events from.
+* ___sqs_queue_arn:___ ARN of SQS queue Threat Stack reads events from.
 
-* sqs_queue_id: SQS queue ID / endpoint.
+* ___sqs_queue_id:___ SQS queue ID / endpoint.
 
-* sqs_queue_source: Name of SQS queue Threat Stack reads events from.  (Enter this value into Threat Stack when setting up.)
+* ___sqs_queue_source:___ Name of SQS queue Threat Stack reads events from.  (Enter this value into Threat Stack when setting up.)
