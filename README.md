@@ -3,6 +3,16 @@ Setup Threat Stack <-> AWS integration module
 
 This module provides the ability to setup Threat Stack integration via Terraform.  This module will setup the following:
 
+* AWS CloudTrail
+  * multi-region trail
+  * records global service events
+  * S3 bucket to store events
+    * enables log file validation
+  * CloudTrail to Cloudwatch logging
+* AWS SNS topic to forward CloudTrail events to
+* AWS SQS queue Threat Stack will check for events
+* Cross account IAM role for Threat Stack
+
 
 ## Usage
 To use this module you need to create a Terraform configuration that utilizes this module.  A basic example configuration would look as follows (Be sure to adjust the git ref in the source value appropriately):
