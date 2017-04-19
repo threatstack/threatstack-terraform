@@ -10,11 +10,11 @@ To use this module you need to create a Terraform configuration that utilizes th
 ```hcl
 module "threatstack_aws_integration" {
   source                        = "github.com/threatstack/tf_threatstack_aws_integration?ref=v1.0.0"
-  aws_account                   = "AWS_ACCOUNT_NAME"
-  aws_account_id                = "AWS_ACCOUNT_ID"
+  aws_account                   = "<AWS_ACCOUNT_NAME>"
+  aws_account_id                = "<AWS_ACCOUNT_ID>"
   aws_region                    = "us-east-1"
-  threatstack_account_id        = "THREATSTACK_AWS_ACCOUNT_ID"
-  threatstack_external_id       = "THREATSTACK_AWS_EXTERNAL_ID"
+  threatstack_account_id        = "<THREATSTACK_AWS_ACCOUNT_ID>"
+  threatstack_external_id       = "<THREATSTACK_AWS_EXTERNAL_ID>"
 }
 ```
 
