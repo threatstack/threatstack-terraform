@@ -42,6 +42,7 @@ resource "aws_cloudtrail" "ct" {
   is_multi_region_trail         = "${var.is_multi_region_trail}"
   cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.ct.arn}"
   cloud_watch_logs_role_arn     = "${aws_iam_role.ct.arn}"
+  sns_topic_name                = "${aws_sns_topic.sns.arn}"
   depends_on                    = ["aws_s3_bucket_policy.bucket"]
 }
 
