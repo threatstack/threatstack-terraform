@@ -11,6 +11,10 @@ output "cloudtrail_arn" {
   value = "${aws_cloudtrail.ct.arn}"
 }
 
+output "iam_role_cloudtrail_name" {
+  value = "${aws_iam_role.ct.name}"
+}
+
 output "iam_role_cloudtrail_arn" {
   value = "${aws_iam_role.ct.arn}"
 }
