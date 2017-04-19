@@ -10,6 +10,7 @@ data "template_file" "aws_sqs_queue_policy" {
 
 resource "aws_sqs_queue" "sqs" {
   name = "${var.aws_sqs_queue_name}"
+  depends_on = ["aws_sns_topic_policy.sns"]
 }
 
 resource "aws_sqs_queue_policy" "sqs" {
@@ -21,5 +22,6 @@ resource "aws_sns_topic_subscription" "sqs" {
   topic_arn = "${aws_sns_topic.sns.arn}"
   protocol = "sqs"
   endpoint = "${aws_sqs_queue.sqs.arn}"
+  depends_on = ["aws_sqs_queue_policy.sqs"]
 }
 

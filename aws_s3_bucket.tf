@@ -21,6 +21,7 @@ resource "aws_s3_bucket" "bucket" {
   tags = {
     terraform = "true"
   }
+  depends_on = ["aws_sns_topic_subscription.sqs"]
 }
 
 resource "aws_s3_bucket_policy" "bucket" {

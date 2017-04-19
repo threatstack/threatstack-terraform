@@ -8,6 +8,7 @@ data "template_file" "aws_sns_topic_policy" {
 resource "aws_sns_topic" "sns" {
   name = "${var.aws_sns_topic_name}"
   display_name = "${var.aws_sns_topic_display_name}"
+  depends_on = ["aws_iam_role.role"]
 }
 
 resource "aws_sns_topic_policy" "sns" {
