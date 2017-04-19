@@ -31,11 +31,11 @@ module "threatstack_aws_integration" {
 ## Threat Stack Setup
 In Threat Stack click `Add Profile` under _AWS Profiles_ fill in the relevant output values on the _Integrations_ page under _Settings_ and get the Threat Stack _Account ID_ and _External ID_.  Use these values for the `threatstack_account_id` and `threatstack_external_id`.  Run Terraform and get the outputs from it.
 
-![Terraform output](https://github.com/threatstack/tf_threatstack_aws_integration/raw/master/docs/terraform_output.png “Terraform output”)
+![Terraform output](https://github.com/threatstack/tf_threatstack_aws_integration/raw/master/doc/terraform_output.png “Terraform output”)
 
 With the output values, fill in the Threat Stack profile screen.
 
-![Threat Stack setup](https://github.com/threatstack/tf_threatstack_aws_integration/raw/master/docs/terraform_output.png “Threat Stack setup screen”)
+![Threat Stack setup](https://github.com/threatstack/tf_threatstack_aws_integration/raw/master/doc/terraform_output.png “Threat Stack setup screen”)
 
 ## Variables
 * ___aws_account:___ Name of AWS account.  Used to find remote state information and is prepended to bucket names.
