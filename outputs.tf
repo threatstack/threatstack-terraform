@@ -1,22 +1,22 @@
 // Outputs
 output "cloudtrail_id" {
-  value = "${module.aws_cloudtrail.cloudtrail_id}"
+  value = "${aws_cloudtrail.ct.id}"
 }
 
 output "cloudtrail_home_region" {
-  value = "${module.aws_cloudtrail.cloudtrail_home_region}"
+  value = "${aws_cloudtrail.ct.home_region}"
 }
 
 output "cloudtrail_arn" {
-  value = "${module.aws_cloudtrail.cloudtrail_arn}"
+  value = "${aws_cloudtrail.ct.arn}"
 }
 
 output "iam_role_cloudtrail_arn" {
-  value = "${module.aws_cloudtrail.iam_role_cloudtrail_arn}"
+  value = "${aws_iam_role.ct.arn}"
 }
 
 output "cloudwatch_log_group_arn" {
-  value = "${module.aws_cloudtrail.cloudwatch_log_group_arn}"
+  value = "${aws_cloudwatch_log_group.ct.arn}"
 }
 
 output "iam_role_name" {
@@ -28,11 +28,11 @@ output "iam_role_arn" {
 }
 
 output "s3_bucket_id" {
-  value = "${module.aws_cloudtrail.s3_bucket_id}"
+  value = "${aws_s3_bucket.bucket.id}"
 }
 
 output "s3_bucket_arn" {
-  value = "${module.aws_cloudtrail.s3_bucket_arn}"
+  value = "${aws_s3_bucket.bucket.arn}"
 }
 
 output "sns_topic_arn" {

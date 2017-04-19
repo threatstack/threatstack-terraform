@@ -68,6 +68,12 @@ variable "s3_bucket_prefix" {
   default = "/"
 }
 
+variable "s3_force_destroy" {
+  type = "string"
+  description = "Destroy S3 bucket even if not empty."
+  default = "false"
+}
+
 variable "enable_logging" {
   description = "Enable logging, set to 'false' to pause logging."
   default = true
