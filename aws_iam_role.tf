@@ -12,7 +12,7 @@ data "template_file" "aws_iam_role_policy" {
   template = "${file("${path.module}/aws_iam_role_policy.tpl")}"
   vars {
     sqs_queue_arn = "${aws_sqs_queue.sqs.arn}"
-    s3_resource = "${aws_sqs_queue.sqs.arn}/*"
+    s3_resource = "${aws_s3_bucket.bucket.arn}/*"
   }
 }
 
