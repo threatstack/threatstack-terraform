@@ -8,7 +8,7 @@ data "template_file" "aws_sqs_queue_policy" {
 }
 
 resource "aws_sqs_queue" "sqs" {
-  name       = var.aws_sqs_queue_name
+  name       = var.aws.optional_config.sqs_queue_name
   depends_on = [aws_sns_topic_policy.sns]
 }
 
