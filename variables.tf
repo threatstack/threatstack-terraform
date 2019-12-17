@@ -4,7 +4,7 @@
 
 # Variables
 
-# 
+# Threat Stack platform integration
 variable "threatstack" = {
   type = object
   description = "Threat Stack-related Configuration"
@@ -12,7 +12,7 @@ variable "threatstack" = {
 # Required parameters
 
   account_id = string
-  cloud_platform_id = string
+  external_id = string
 
 }
 
@@ -55,11 +55,11 @@ variable "aws" {
     account_id   = null
     region       = null
 
-    s3_force_destroy              = false
     enable_logging                = true
     enable_log_file_validation    = true
     include_global_service_events = true
     is_multi_region_trail         = true
+    s3_force_destroy              = false
 
     optional_config = {
       cloudtrail_name         = "ThreatStackIntegration"
