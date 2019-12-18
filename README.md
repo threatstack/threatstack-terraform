@@ -34,6 +34,7 @@ module "threatstack_aws_integration" {
     account_name      = "<AWS_ACCOUNT_NAME>"
     account_id        = "<AWS_ACCOUNT_ID>"
     region            = "us-east-1"
+  }
 }
 ```
 

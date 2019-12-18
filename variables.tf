@@ -5,7 +5,7 @@
 # Variables
 
 # Threat Stack platform integration
-variable "threatstack" = {
+variable "threatstack" {
   type = object
   description = "Threat Stack-related Configuration"
 
