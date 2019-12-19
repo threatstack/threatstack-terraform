@@ -6,49 +6,44 @@
 
 # Threat Stack platform integration
 variable "threatstack" {
-  type = object
   description = "Threat Stack-related Configuration"
-
-# Required parameters
-
-  account_id = string
-  external_id = string
-
+  type = object({
+    # Required parameters
+    account_id = string
+    external_id = string
+  })
 }
 
 variable "aws" {
-  type = object
   description = "AWS-related Configuration options"
+  type = object({
+    # Required parameters
+    account_name = string
+    account_id   = string
+    region       = string
 
-# Required parameters
+    # Configuration flags
+    s3_force_destroy              = boolean
+    enable_logging                = boolean
+    enable_log_file_validation    = boolean
+    include_global_service_events = boolean
+    is_multi_region_trail         = boolean
 
-  account_name = string
-  account_id   = string
-  region       = string
+    # Optional parameters
+    optional_config = object({
+      type = object
 
-# Configuration flags
+      cloudtrail_name         = string
+      iam_role_name           = string
+      sns_topic_name          = string
+      sns_topic_display_name  = string
+      sqs_queue_name          = string
+      s3_bucket_name          = string
+      s3_bucket_prefix        = string
+    })
+  })
 
-  s3_force_destroy              = boolean
-  enable_logging                = boolean
-  enable_log_file_validation    = boolean
-  include_global_service_events = boolean
-  is_multi_region_trail         = boolean
-
-# Optional parameters
-
-  optional_config = {
-    type = object
-
-    cloudtrail_name         = string
-    iam_role_name           = string
-    sns_topic_name          = string
-    sns_topic_display_name  = string
-    sqs_queue_name          = string
-    s3_bucket_name          = string
-    s3_bucket_prefix        = string
-  }
-
-# Default values
+  # Default values
 
   default      = {
     account_name = null
