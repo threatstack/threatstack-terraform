@@ -163,13 +163,13 @@ module "threatstack_aws_integration" {
 
     # ...
 
-    cloudtrail_name         = string
-    iam_role_name           = string
-    sns_topic_name          = string
-    sns_topic_display_name  = string
-    sqs_queue_name          = string
-    s3_bucket_name          = string
-    s3_force_destroy        = string
+    cloudtrail_name         = string # Defaults to "ThreatStackIntegration"
+    iam_role_name           = string # Defaults to "ThreatStackIntegration"
+    sns_topic_name          = string # Defaults to "ThreatStackIntegration"
+    sns_topic_display_name  = string # Defaults to "Threat Stack integration topic."
+    sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
+    s3_bucket_name          = string # Defaults to "threatstack-integration"
+    s3_force_destroy        = string # Defaults to "/"
 
     #...
 
@@ -179,7 +179,7 @@ module "threatstack_aws_integration" {
 
 * ___aws_optional_conf.cloudtrail_name (optional):___ Name of CloudTrail trail.
 
-* ___aws_optional_conf.iam_role_name (optional):___ Name of cross account IAM role grating access for Threat Stack to AWS environment.
+* ___aws_optional_conf.iam_role_name (optional):___ Name of cross account IAM role gating access for Threat Stack to AWS environment.
 
 * ___aws_optional_conf.sns_topic_name (optional):___ Name of SNS topic used by CloudTrail.
 
@@ -187,7 +187,7 @@ module "threatstack_aws_integration" {
 
 * ___aws_optional_conf.sqs_queue_name (optional):___ Name of SQS queue to forward events to.
 
-* ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that domain name and account name will be prepended to thebucket to help prevent name collisions.
+* ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
 
 * ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
 
