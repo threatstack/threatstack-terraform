@@ -23,11 +23,11 @@ variable "aws" {
     region       = string
 
     # Configuration flags
-    s3_force_destroy              = boolean
-    enable_logging                = boolean
-    enable_log_file_validation    = boolean
-    include_global_service_events = boolean
-    is_multi_region_trail         = boolean
+    s3_force_destroy              = string
+    enable_logging                = string
+    enable_log_file_validation    = string
+    include_global_service_events = string
+    is_multi_region_trail         = string
 
     # Optional parameters
     optional_config = object({
