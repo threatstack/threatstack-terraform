@@ -15,6 +15,12 @@ This module will create and manage the following:
 * AWS SQS queue Threat Stack will check for events
 * Cross account IAM role for Threat Stack
 
+## Dependencies
+
+This Terraform module currently depends on the following providers as dependencies:
+
+* `template` ~> 2.1
+* `aws` ~> 2.0
 
 ## Usage
 > **This version of the module is compatible with Terraform 0.12+.**  Terraform 0.11 and earlier are not supported, and this module will not work. For a pre-0.12-compatible version of this module, see [v1.0.0 of this module](https://github.com/threatstack/threatstack-terraform/tree/v1.0.0).
