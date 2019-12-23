@@ -23,15 +23,14 @@ variable "aws" {
     region       = string
 
     # Configuration flags
-    s3_force_destroy              = string
-    enable_logging                = string
-    enable_log_file_validation    = string
-    include_global_service_events = string
-    is_multi_region_trail         = string
+    s3_force_destroy              = bool
+    enable_logging                = bool
+    enable_log_file_validation    = bool
+    include_global_service_events = bool
+    is_multi_region_trail         = bool
 
     # Optional parameters
     optional_config = object({
-      type = object
 
       cloudtrail_name         = string
       iam_role_name           = string
