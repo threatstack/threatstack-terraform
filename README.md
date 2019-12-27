@@ -37,7 +37,6 @@ module "threatstack_aws_integration" { # THe name of the module here is arbitrar
   }
 
   aws_account_info = {
-    account_name      = "<AWS_ACCOUNT_NAME>"
     account_id        = "<AWS_ACCOUNT_ID>"
     region            = "us-east-1"
   }
@@ -104,7 +103,6 @@ module "threatstack_aws_integration" {
 
     # ...
 
-    account_name = string
     account_id   = string
     region       = string
 
@@ -113,8 +111,6 @@ module "threatstack_aws_integration" {
   }
 }
 ```
-
-* ___aws_account_info.account_name:___ Name of AWS account.  Used to find remote state information and is prepended to bucket names.
 
 * ___aws_account_info.account_id:___ Account ID, used for CloudTrail integration.
 

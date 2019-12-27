@@ -24,13 +24,11 @@ variable "threatstack" {
 variable "aws_account_info" {
   description = "(REQUIRED) AWS account settings"
   type = object({
-    account_name = string
     account_id   = string
     region       = string
   })
 
   default = {
-    account_name = null
     account_id   = null
     region       = null
   }
