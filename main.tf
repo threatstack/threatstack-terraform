@@ -1,2 +1,0 @@
-// Setup Threat Stack integration
-
