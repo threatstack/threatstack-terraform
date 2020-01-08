@@ -188,6 +188,61 @@ module "threatstack_aws_integration" {
 * ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
 
 ## Outputs
+
+### Exposing this module's outputs to the rest of your terraform definitions
+
+As of Terraform 0.12, there is a [known change](https://github.com/hashicorp/terraform/issues/1940#issuecomment-513055570) in the structure of the terraform state file format that makes child module outputs inaccessible to tools like `terraform show`, `terraform output`, or via remote state data sources. A child module is any resource defined with the `module "<name>" { ... }` resource directive.
+
+In order to refer to any of the outputs this module outside of the implementing module, the outputs desired must be wrapped in outputs defined in the implementing module itself.
+
+One way to do this (see below) is to define your infrastructure in your `main.tf`, and define your wrapper outputs in an `outputs.tf` file.
+
+This is the file that implements the threatstack-terraform module with your account-specific information:
+
+`<your_module_directory>/main.tf:`
+```hcl
+module "threatstack_aws_integration" {
+  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+
+  aws_account_info = {
+    # ...
+  }
+
+  aws_flags = {
+    # ...
+  }
+
+  aws_optional_conf = {
+    # ...
+  }
+}
+```
+
+Using the name you gave to the instance of the threatstack-terraform module above, the output is defined as:
+
+`<your_module_directory>/outputs.tf:`
+```hcl
+output "threatstack-aws-integration-iam-role-arn" {
+  value = "${module.threatstack_aws_integration.iam_role_arn}"
+}
+```
+
+You can wrap any of the threatstack-terraform module outputs listed below in the same way.
+
+#### Important outputs to expose to complete the integration
+
+There are three output values that are needed to complete the integration by defining them in the Threat Stack Platform administrative settings (see the [official documentation](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) for more information). They are:
+
+* ___iam_role_arn___
+* ___s3_bucket_id___
+* ___sqs_queue_source___
+
+It is recommended that these outputs are rewrapped in outputs defined in your implementing module, at a minimum, if not the entire list.
+
+### List of all outputs from this module
+
+You can also see this list in this module's `outputs.tf` file.
+
 * ___cloudtrail_arn:___ ARN of CloudTrail.
 
 * ___cloudtrail_home_region:___ Home region for CloudTrail

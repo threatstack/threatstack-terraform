@@ -1,4 +1,15 @@
 // Outputs
+// If you want to reference these outputs outside of
+// the module that uses this threatstack-terraform
+// module, you need to define your own outputs in the
+// module that uses this module.
+//
+// Example:
+//
+//    output "my_modules_output_for_cloudtrail_id" {
+//      value = "${module.threatstack_aws_integration.cloudtrail_id}"
+//    }
+
 output "cloudtrail_id" {
   value = aws_cloudtrail.ct.id
 }
