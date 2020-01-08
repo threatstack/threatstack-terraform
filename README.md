@@ -193,7 +193,7 @@ module "threatstack_aws_integration" {
 
 As of Terraform 0.12, there is a [known change](https://github.com/hashicorp/terraform/issues/1940#issuecomment-513055570) in the structure of the terraform state file format that makes child module outputs inaccessible to tools like `terraform show`, `terraform output`, or via remote state data sources. A child module is any resource defined with the `module "<name>" { ... }` resource directive.
 
-In order to refer to any of the outputs this module outside of the implementing module, the outputs desired must be wrapped in outputs defined in the implementing module itself.
+In order to refer to any of the outputs of this module outside of the implementing module, they must be wrapped as new outputs defined in the implementing module itself.
 
 One way to do this (see below) is to define your infrastructure in your `main.tf`, and define your wrapper outputs in an `outputs.tf` file.
 
