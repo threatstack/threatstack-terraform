@@ -4,6 +4,17 @@
 
 # Variables
 
+# Enable this module (Optional)
+#
+# Sometimes you need to have a way to create resources conditionally
+# Terraform does not allow to use count inside module block
+# To get around this, specify the argument `enabled` defaults to `true`
+variable "enabled" {
+  description = "(Optional) Controls if resources should be created (it affects all resources)"
+  type = bool
+  default = true
+}
+
 # Threat Stack platform integration (REQUIRED)
 #
 # Threat Stack-specific settings to deploy the integration
@@ -16,6 +27,7 @@ variable "threatstack" {
     external_id = string
   })
 }
+
 
 # AWS account information (REQUIRED)
 #
