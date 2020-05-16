@@ -52,6 +52,6 @@ resource "aws_cloudtrail" "ct" {
   cloud_watch_logs_group_arn    = aws_cloudwatch_log_group.ct[0].arn
   cloud_watch_logs_role_arn     = aws_iam_role.ct[0].arn
   sns_topic_name                = aws_sns_topic.sns[0].arn
-  depends_on                    = [aws_s3_bucket_policy[0].bucket]
+  depends_on                    = [aws_s3_bucket_policy.bucket]
 }
 
