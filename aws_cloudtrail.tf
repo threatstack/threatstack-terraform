@@ -37,7 +37,7 @@ resource "aws_iam_role" "ct" {
 resource "aws_iam_role_policy" "ct" {
   count = var.enabled ? 1 : 0
   name   = "CloudTrailToCloudWatch"
-  role   = aws_iam_role.ct.id
+  role   = aws_iam_role.ct[0].id
   policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_policy[0].rendered
 }
 
