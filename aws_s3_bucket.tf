@@ -1,6 +1,6 @@
 // AWS CloudTrail S3 Bucket
 data "template_file" "aws_s3_bucket_policy" {
-  count = var.enabled ? 1 : 0
+  count    = var.enabled ? 1 : 0
   template = file("${path.module}/aws_s3_bucket_policy.tpl")
 
   vars = {
@@ -12,7 +12,7 @@ data "template_file" "aws_s3_bucket_policy" {
 resource "aws_s3_bucket" "bucket" {
   # This is to keep things consistent and prevent conflicts across
   # environments.
-  count = var.enabled ? 1 : 0
+  count  = var.enabled ? 1 : 0
   bucket = var.aws_optional_conf.s3_bucket_name
   acl    = "private"
 
@@ -27,7 +27,7 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 resource "aws_s3_bucket_policy" "bucket" {
-  count = var.enabled ? 1 : 0
+  count  = var.enabled ? 1 : 0
   bucket = aws_s3_bucket.bucket[0].id
   policy = data.template_file.aws_s3_bucket_policy[0].rendered
 }

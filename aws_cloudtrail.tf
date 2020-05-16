@@ -7,7 +7,7 @@ data "template_file" "aws_iam_cloudtrail_to_cloudwatch_assume_role_policy" {
 }
 
 data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
-  count = var.enabled ? 1 : 0
+  count    = var.enabled ? 1 : 0
   template = file("${path.module}/aws_iam_cloudtrail_to_cloudwatch_policy.tpl")
   vars = {
     aws_account_id      = var.aws_account_info.account_id
@@ -18,7 +18,7 @@ data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
 
 resource "aws_cloudwatch_log_group" "ct" {
   count = var.enabled ? 1 : 0
-  name = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
+  name  = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
   tags = {
     terraform = "true"
   }
@@ -29,20 +29,20 @@ resource "aws_cloudwatch_log_group" "ct" {
 }
 
 resource "aws_iam_role" "ct" {
-  count = var.enabled ? 1 : 0
+  count              = var.enabled ? 1 : 0
   name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
   assume_role_policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy[0].rendered
 }
 
 resource "aws_iam_role_policy" "ct" {
-  count = var.enabled ? 1 : 0
+  count  = var.enabled ? 1 : 0
   name   = "CloudTrailToCloudWatch"
   role   = aws_iam_role.ct[0].id
   policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_policy[0].rendered
 }
 
 resource "aws_cloudtrail" "ct" {
-  count = var.enabled ? 1 : 0
+  count                         = var.enabled ? 1 : 0
   name                          = var.aws_optional_conf.cloudtrail_name
   s3_bucket_name                = aws_s3_bucket.bucket[0].id
   enable_logging                = var.aws_flags.enable_logging

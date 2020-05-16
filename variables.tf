@@ -25,13 +25,13 @@ variable "threatstack" {
 variable "aws_account_info" {
   description = "(REQUIRED) AWS account settings"
   type = object({
-    account_id   = string
-    region       = string
+    account_id = string
+    region     = string
   })
 
   default = {
-    account_id   = null
-    region       = null
+    account_id = null
+    region     = null
   }
 }
 
@@ -88,6 +88,6 @@ variable "aws_optional_conf" {
 # Defaults to true so module will be created by default.
 variable "enabled" {
   description = "(Optional) Controls if resources should be created (it affects all resources)"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
