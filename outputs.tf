@@ -11,58 +11,58 @@
 //    }
 
 output "cloudtrail_id" {
-  value = concat(aws_cloudtrail.ct.*.id, [""])[0]
+  value = element(concat(aws_cloudtrail.ct.*.id, list("")), 0)
 }
 
 output "cloudtrail_home_region" {
-  value = concat(aws_cloudtrail.ct.*.home_region, [""])[0]
+  value = element(concat(aws_cloudtrail.ct.*.home_region, list("")), 0)
 }
 
 output "cloudtrail_arn" {
-  value = concat(aws_cloudtrail.ct.*.arn, [""])[0]
+  value = element(concat(aws_cloudtrail.ct.*.arn, list("")), 0)
 }
 
 output "iam_role_cloudtrail_name" {
-  value = concat(aws_iam_role.ct.*.name, [""])[0]
+  value = element(concat(aws_iam_role.ct.*.name, list("")), 0)
 }
 
 output "iam_role_cloudtrail_arn" {
-  value = concat(aws_iam_role.ct.*.arn, [""])[0]
+  value = element(concat(aws_iam_role.ct.*.arn, list("")), 0)
 }
 
 output "cloudwatch_log_group_arn" {
-  value = concat(aws_cloudwatch_log_group.ct.*.arn, [""])[0]
+  value = element(concat(aws_cloudwatch_log_group.ct.*.arn, list("")), 0)
 }
 
 output "iam_role_name" {
-  value = concat(aws_iam_role.role.*.name, [""])[0]
+  value = element(concat(aws_iam_role.role.*.name, list("")), 0)
 }
 
 output "iam_role_arn" {
-  value = concat(aws_iam_role.role.*.arn, [""])[0]
+  value = element(concat(aws_iam_role.role.*.arn, list("")), 0)
 }
 
 output "s3_bucket_id" {
-  value = concat(aws_s3_bucket.bucket.*.id, [""])[0]
+  value = element(concat(aws_s3_bucket.bucket.*.id, list("")), 0)
 }
 
 output "s3_bucket_arn" {
-  value = concat(aws_s3_bucket.bucket.*.arn, [""])[0]
+  value = element(concat(aws_s3_bucket.bucket.*.arn, list("")), 0)
 }
 
 output "sns_topic_arn" {
-  value = concat(aws_sns_topic.sns.*.arn, [""])[0]
+  value = element(concat(aws_sns_topic.sns.*.arn, list("")), 0)
 }
 
 output "sqs_queue_id" {
-  value = concat(aws_sqs_queue.sqs.*.id, [""])[0]
+  value = element(concat(aws_sqs_queue.sqs.*.id, list("")), 0)
 }
 
 output "sqs_queue_arn" {
-  value = concat(aws_sqs_queue.sqs.*.arn, [""])[0]
+  value = element(concat(aws_sqs_queue.sqs.*.arn, list("")), 0)
 }
 
 output "sqs_queue_source" {
-  value = element(split(":", aws_sqs_queue.sqs.*.arn), 5)
+  value = element(split(":", element(concat(aws_sqs_queue.sqs.*.arn, list("")), 0)), 5)
 }
 
