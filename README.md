@@ -63,6 +63,8 @@ The module's input variables are defined in their own Terraform variable objects
 
 * ___aws_optional_conf:___ **(Optional)** The settings have defaults, so the module can work without these explicitly set.
 
+* ___enabled:___ **(Optional)**  Enable this module. Defaults to `true` so module will be created by default.
+
 
 #### Threat Stack configuration
 
@@ -186,6 +188,22 @@ module "threatstack_aws_integration" {
 * ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
 
 * ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
+
+
+## Conditional creation
+
+Sometimes you need to have a way to create resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `enabled`.
+This is useful in case of using `threatstack` module inside another module.
+
+```hcl
+# This VPC will not be created
+module "threatstack_aws_integration" {
+  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+
+  enabled = false
+  # ... omitted
+}
+```
 
 ## Outputs
 
