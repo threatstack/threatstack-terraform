@@ -18,6 +18,8 @@ data "template_file" "aws_iam_role_policy" {
 
 resource "aws_iam_role" "role" {
   name               = var.aws_optional_conf.iam_role_name
+  tags               = var.aws_optional_conf.tags
+
   assume_role_policy = data.template_file.aws_iam_assume_role_policy.rendered
   depends_on         = [aws_iam_role_policy.ct]
 }

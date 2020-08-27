@@ -165,7 +165,8 @@ module "threatstack_aws_integration" {
     sns_topic_display_name  = string # Defaults to "Threat Stack integration topic."
     sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
     s3_bucket_name          = string # Defaults to "threatstack-integration"
-    s3_force_destroy        = string # Defaults to "/"
+    s3_bucket_prefix        = string # Defaults to "/"
+    tags                    = map    # Defaults to {} (empty map)
 
     #...
 
@@ -186,6 +187,8 @@ module "threatstack_aws_integration" {
 * ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
 
 * ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
+
+* ___aws_optional_conf.tags(optional):___ Map of tags to apply to all resources.
 
 ## Outputs
 

@@ -16,9 +16,8 @@ data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
 
 resource "aws_cloudwatch_log_group" "ct" {
   name = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
-  tags = {
-    terraform = "true"
-  }
+  tags = var.aws_optional_conf.tags
+
   depends_on = [
     aws_iam_role_policy.ct,
     aws_s3_bucket_policy.bucket,
@@ -27,6 +26,8 @@ resource "aws_cloudwatch_log_group" "ct" {
 
 resource "aws_iam_role" "ct" {
   name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
+  tags               = var.aws_optional_conf.tags
+
   assume_role_policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.rendered
 }
 
@@ -38,6 +39,8 @@ resource "aws_iam_role_policy" "ct" {
 
 resource "aws_cloudtrail" "ct" {
   name                          = var.aws_optional_conf.cloudtrail_name
+  tags                          = var.aws_optional_conf.tags
+
   s3_bucket_name                = aws_s3_bucket.bucket.id
   enable_logging                = var.aws_flags.enable_logging
   enable_log_file_validation    = var.aws_flags.enable_log_file_validation

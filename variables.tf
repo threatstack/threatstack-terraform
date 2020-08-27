@@ -69,6 +69,7 @@ variable "aws_optional_conf" {
     sqs_queue_name         = string
     s3_bucket_name         = string
     s3_bucket_prefix       = string
+    tags                   = map(string)
   })
 
   default = {
@@ -79,5 +80,6 @@ variable "aws_optional_conf" {
     sqs_queue_name         = "ThreatStackIntegration"
     s3_bucket_name         = "threatstack-integration"
     s3_bucket_prefix       = "/"
+    tags                   = {}
   }
 }
