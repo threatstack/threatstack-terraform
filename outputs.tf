@@ -11,27 +11,35 @@
 //    }
 
 output "cloudtrail_id" {
-  value = aws_cloudtrail.ct.id
-}
-
-output "cloudtrail_home_region" {
-  value = aws_cloudtrail.ct.home_region
+  value = var.existing_cloudtrail == null ? aws_cloudtrail.ct[0].id : ""
 }
 
 output "cloudtrail_arn" {
-  value = aws_cloudtrail.ct.arn
+  value = var.existing_cloudtrail == null ? aws_cloudtrail.ct[0].arn : var.existing_cloudtrail.cloudtrail_arn
+}
+
+output "cloudtrail_home_region" {
+  value = var.existing_cloudtrail == null ? aws_cloudtrail.ct[0].home_region : ""
 }
 
 output "iam_role_cloudtrail_name" {
-  value = aws_iam_role.ct.name
+  value = var.existing_cloudtrail == null ? aws_iam_role.ct[0].name : ""
 }
 
 output "iam_role_cloudtrail_arn" {
-  value = aws_iam_role.ct.arn
+  value = var.existing_cloudtrail == null ? aws_iam_role.ct[0].arn : ""
 }
 
 output "cloudwatch_log_group_arn" {
-  value = aws_cloudwatch_log_group.ct.arn
+  value = var.existing_cloudtrail == null ? aws_cloudwatch_log_group.ct[0].arn : ""
+}
+
+output "s3_bucket_id" {
+  value = var.existing_cloudtrail == null ? aws_s3_bucket.bucket[0].id : ""
+}
+
+output "s3_bucket_arn" {
+  value = coalesce(aws_s3_bucket.bucket[0].arn, var.existing_cloudtrail.s3_bucket_arn)
 }
 
 output "iam_role_name" {
@@ -40,14 +48,6 @@ output "iam_role_name" {
 
 output "iam_role_arn" {
   value = aws_iam_role.role.arn
-}
-
-output "s3_bucket_id" {
-  value = aws_s3_bucket.bucket.id
-}
-
-output "s3_bucket_arn" {
-  value = aws_s3_bucket.bucket.arn
 }
 
 output "sns_topic_arn" {

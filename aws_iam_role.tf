@@ -12,14 +12,13 @@ data "template_file" "aws_iam_role_policy" {
   template = file("${path.module}/aws_iam_role_policy.tpl")
   vars = {
     sqs_queue_arn = aws_sqs_queue.sqs.arn
-    s3_resource   = "${aws_s3_bucket.bucket.arn}/*"
+    s3_resource   = coalesce(aws_s3_bucket.bucket[0].arn, var.existing_cloudtrail.s3_bucket_arn)
   }
 }
 
 resource "aws_iam_role" "role" {
   name               = var.aws_optional_conf.iam_role_name
   assume_role_policy = data.template_file.aws_iam_assume_role_policy.rendered
-  depends_on         = [aws_iam_role_policy.ct]
 }
 
 resource "aws_iam_role_policy" "role" {

@@ -34,6 +34,18 @@ variable "aws_account_info" {
   }
 }
 
+# Setting for integrating with an existing cloudtrail resource
+#
+variable "existing_cloudtrail" {
+  description = "(Optional) Uses existing cloudtrail infrastructure instead of creating all new resources"
+  type = object({
+    cloudtrail_arn            = string
+    s3_bucket_arn             = string
+  })
+  
+  default = null
+}
+
 # AWS-related configuration flags (Optional)
 #
 # The flags have defaults, so the module can work without these explicitly set
