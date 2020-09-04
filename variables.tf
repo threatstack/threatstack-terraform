@@ -24,13 +24,13 @@ variable "threatstack" {
 variable "aws_account_info" {
   description = "(REQUIRED) AWS account settings"
   type = object({
-    account_id   = string
-    region       = string
+    account_id = string
+    region     = string
   })
 
   default = {
-    account_id   = null
-    region       = null
+    account_id = null
+    region     = null
   }
 }
 
@@ -39,10 +39,10 @@ variable "aws_account_info" {
 variable "existing_cloudtrail" {
   description = "(Optional) Uses existing cloudtrail infrastructure instead of creating all new resources"
   type = object({
-    cloudtrail_arn            = string
-    s3_bucket_arn             = string
+    cloudtrail_arn = string
+    s3_bucket_arn  = string
   })
-  
+
   default = null
 }
 
