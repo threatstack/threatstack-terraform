@@ -74,6 +74,8 @@ The Threat Stack configuration is defined as follows:
 module "threatstack_aws_integration" {
   source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
 
+  #...
+
   # Strings generated from the Threat Stack Add Account page
   threatstack = {
 
@@ -81,6 +83,9 @@ module "threatstack_aws_integration" {
     external_id = string
 
   }
+
+  #...
+
 }
 ```
 
@@ -91,7 +96,7 @@ module "threatstack_aws_integration" {
 
 #### AWS configuration
 
-This Terraform input variable is split into 3 sections: required settings, flag settings, and optional settings
+This Terraform input variable is split into 4 sections: required settings, flag settings, optional settings, and how to use an existing cloudtrail with this module
 
 ##### Required settings
 
@@ -99,16 +104,16 @@ This Terraform input variable is split into 3 sections: required settings, flag 
 module "threatstack_aws_integration" {
   source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
 
-  aws_account_info = {
-
     # ...
+
+  aws_account_info = {
 
     account_id   = string
     region       = string
-
-    #...
-
   }
+
+  #...
+
 }
 ```
 
@@ -122,19 +127,19 @@ module "threatstack_aws_integration" {
 module "threatstack_aws_integration" {
   source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
 
-  aws_flags = {
+  # ...
 
-    # ...
+  aws_flags = {
 
     enable_logging                = bool # Defaults to `true`
     enable_log_file_validation    = bool # Defaults to `true`
     include_global_service_events = bool # Defaults to `true`
     is_multi_region_trail         = bool # Defaults to `true`
     s3_force_destroy              = bool # Defaults to `false`
-    
-    #...
-
   }
+    
+  #...
+
 }
 
 ```
@@ -148,16 +153,15 @@ module "threatstack_aws_integration" {
 
 * ___aws_flags.s3_force_destroy (optional):___ Bucket destroy will fail if the bucket is not empty.  Set to `"true"` if you REALLY want to destroy logs on teardown.
 
-
 ##### Optional settings
 
 ```hcl
 module "threatstack_aws_integration" {
   source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
 
-  aws_optional_conf = {
+  # ...
 
-    # ...
+  aws_optional_conf = {
 
     cloudtrail_name         = string # Defaults to "ThreatStackIntegration"
     iam_role_name           = string # Defaults to "ThreatStackIntegration"
@@ -166,10 +170,10 @@ module "threatstack_aws_integration" {
     sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
     s3_bucket_name          = string # Defaults to "threatstack-integration"
     s3_force_destroy        = string # Defaults to "/"
-
-    #...
-
   }
+
+  #...
+
 }
 ```
 
@@ -186,6 +190,34 @@ module "threatstack_aws_integration" {
 * ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
 
 * ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
+
+##### Using existing cloudtrail infrastructure
+
+If you already have your Cloudtrail set up, with its corresponding cloudwatch log group and S3 bucket, you can configure this module to use this infrastructure by setting the following settings. The module will still set up the SQS and SNS resources required, as well as the various IAM resources to allow for the integration to talk to Threat Stack's platform.
+
+> **NOTE:**
+> Do not define the ___existing_cloudtrail___ variable at all if you want this module to manage all of the resources for the Threat Stack integration. By default, the ___existing_cloudtrail___ variable is set to `null`
+
+```hcl
+module "threatstack_aws_integration" {
+  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+
+  # ...
+
+  existing_cloudtrail = {
+
+    cloudtrail_arn = string # The ARN of the existing cloudtrail with which you want to integrate.
+    s3_bucket_arn  = string # The ARN of the existing cloudtrail's S3 bucket
+  }
+
+  # ...
+
+}
+```
+
+* ___existing_cloudtrail.cloudtrail_arn (required if using existing cloudtrail):___ Only passed in so that it can be used as an output. Nothing in the integration directly refers to the existing cloudtrail itself.
+
+* ___existing_cloudtrail.s3_bucket_arn (required if using existing cloudtrail):___ Used by the IAM role that links the Threat Stack account to the bucket with that contains the needed data.
 
 ## Outputs
 
@@ -245,6 +277,8 @@ It is recommended that these outputs be rewrapped in outputs defined in your imp
 
 > **NOTE:**
 > You can also see this list in this module's `outputs.tf` file.
+
+> If you are defining the ___existing_cloudtrail___ block, many of these outputs will be set to `""` (an empty string).
 
 * ___cloudtrail_arn:___ ARN of CloudTrail.
 
