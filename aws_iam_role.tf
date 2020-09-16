@@ -12,7 +12,11 @@ data "template_file" "aws_iam_role_policy" {
   template = file("${path.module}/aws_iam_role_policy.tpl")
   vars = {
     sqs_queue_arn = aws_sqs_queue.sqs.arn
-    s3_resource   = coalesce(aws_s3_bucket.bucket[0].arn, var.existing_cloudtrail.s3_bucket_arn)
+
+    # This checks to see if a new bucket exists (null check)
+    # If it is null, just give a null so coalesce skips it
+    # If not null, return the arn of the bucket, which is what we really need
+    s3_resource   = coalesce((aws_s3_bucket.bucket[0] != null ? aws_s3_bucket.bucket[0].arn : null), var.existing_cloudtrail.s3_bucket_arn)
   }
 }
 
