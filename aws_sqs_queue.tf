@@ -25,4 +25,3 @@ resource "aws_sns_topic_subscription" "sqs" {
   endpoint   = aws_sqs_queue.sqs.arn
   depends_on = [aws_sqs_queue_policy.sqs]
 }
-

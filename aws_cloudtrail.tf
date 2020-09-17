@@ -15,6 +15,8 @@ data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
 }
 
 resource "aws_cloudwatch_log_group" "ct" {
+  count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
+
   name = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
   tags = var.aws_optional_conf.tags
 
@@ -25,6 +27,8 @@ resource "aws_cloudwatch_log_group" "ct" {
 }
 
 resource "aws_iam_role" "ct" {
+  count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
+
   name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
   tags               = var.aws_optional_conf.tags
 
@@ -32,23 +36,26 @@ resource "aws_iam_role" "ct" {
 }
 
 resource "aws_iam_role_policy" "ct" {
+  count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
+
   name   = "CloudTrailToCloudWatch"
-  role   = aws_iam_role.ct.id
+  role   = aws_iam_role.ct[0].id
   policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_policy.rendered
 }
 
 resource "aws_cloudtrail" "ct" {
+  count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
+
   name                          = var.aws_optional_conf.cloudtrail_name
   tags                          = var.aws_optional_conf.tags
 
-  s3_bucket_name                = aws_s3_bucket.bucket.id
+  s3_bucket_name                = aws_s3_bucket.bucket[0].id
   enable_logging                = var.aws_flags.enable_logging
   enable_log_file_validation    = var.aws_flags.enable_log_file_validation
   include_global_service_events = var.aws_flags.include_global_service_events
   is_multi_region_trail         = var.aws_flags.is_multi_region_trail
-  cloud_watch_logs_group_arn    = "${replace(aws_cloudwatch_log_group.ct.arn, "/:\\*$/", "")}:*"
-  cloud_watch_logs_role_arn     = aws_iam_role.ct.arn
+  cloud_watch_logs_group_arn    = "${replace(aws_cloudwatch_log_group.ct[0].arn, "/:\\*$/", "")}:*"
+  cloud_watch_logs_role_arn     = aws_iam_role.ct[0].arn
   sns_topic_name                = aws_sns_topic.sns.arn
   depends_on                    = [aws_s3_bucket_policy.bucket]
 }
-
