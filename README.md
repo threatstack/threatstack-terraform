@@ -96,7 +96,7 @@ module "threatstack_aws_integration" {
 
 #### AWS configuration
 
-This Terraform input variable is split into 4 sections: required settings, flag settings, optional settings, and how to use an existing cloudtrail with this module
+This Terraform input variable is split into 4 sections: required settings, flag settings, optional settings, and how to use an existing cloudtrail with this module.
 
 ##### Required settings
 
