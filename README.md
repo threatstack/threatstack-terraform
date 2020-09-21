@@ -169,13 +169,9 @@ module "threatstack_aws_integration" {
     sns_topic_display_name  = string # Defaults to "Threat Stack integration topic."
     sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
     s3_bucket_name          = string # Defaults to "threatstack-integration"
-<<<<<<< HEAD
     s3_bucket_prefix        = string # Defaults to "/"
     tags                    = map    # Defaults to {} (empty map)
-=======
-    s3_force_destroy        = string # Defaults to "/"
   }
->>>>>>> master
 
   #...
 
