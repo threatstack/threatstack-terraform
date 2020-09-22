@@ -6,6 +6,8 @@ data "template_file" "aws_sns_topic_policy" {
 
 resource "aws_sns_topic" "sns" {
   name         = var.aws_optional_conf.sns_topic_name
+  tags         = var.aws_optional_conf.tags
+
   display_name = var.aws_optional_conf.sns_topic_display_name
   depends_on   = [aws_iam_role.role]
 }

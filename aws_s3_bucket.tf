@@ -22,10 +22,10 @@ resource "aws_s3_bucket" "bucket" {
     enabled = "false"
   }
   force_destroy = var.aws_flags.s3_force_destroy
-  tags = {
-    terraform = "true"
-  }
-  depends_on = [aws_sns_topic_subscription.sqs]
+
+  tags          = var.aws_optional_conf.tags
+
+  depends_on    = [aws_sns_topic_subscription.sqs]
 }
 
 resource "aws_s3_bucket_policy" "bucket" {

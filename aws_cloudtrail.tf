@@ -18,6 +18,7 @@ resource "aws_cloudwatch_log_group" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
   name = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
+  tags = var.aws_optional_conf.tags
 
   depends_on = [
     aws_iam_role_policy.ct,
@@ -29,6 +30,8 @@ resource "aws_iam_role" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
   name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
+  tags               = var.aws_optional_conf.tags
+
   assume_role_policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.rendered
 }
 
@@ -44,6 +47,8 @@ resource "aws_cloudtrail" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
   name                          = var.aws_optional_conf.cloudtrail_name
+  tags                          = var.aws_optional_conf.tags
+
   s3_bucket_name                = aws_s3_bucket.bucket[0].id
   enable_logging                = var.aws_flags.enable_logging
   enable_log_file_validation    = var.aws_flags.enable_log_file_validation
