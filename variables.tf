@@ -43,7 +43,10 @@ variable "existing_cloudtrail" {
     s3_bucket_arn  = string
   })
 
-  default = null
+  default = {
+    cloudtrail_arn = null
+    s3_bucket_arn  = null
+  }
 }
 
 # AWS-related configuration flags (Optional)
