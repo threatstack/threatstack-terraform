@@ -94,7 +94,8 @@
                 "s3:List*"
             ],
             "Resource": [
-                "${s3_resource}"
+                "${s3_resource}",
+                "${s3_resource}/*"
             ],
             "Effect": "Allow"
         }
