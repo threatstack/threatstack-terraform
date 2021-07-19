@@ -17,23 +17,6 @@ variable "threatstack" {
   })
 }
 
-# AWS account information (REQUIRED)
-#
-# AWS account specifics to deploy the integration.
-# The defaults are null, so the integration will fail if not set
-variable "aws_account_info" {
-  description = "(REQUIRED) AWS account settings"
-  type = object({
-    account_id = string
-    region     = string
-  })
-
-  default = {
-    account_id = null
-    region     = null
-  }
-}
-
 # Setting for integrating with an existing cloudtrail resource
 #
 variable "existing_cloudtrail" {
@@ -49,49 +32,88 @@ variable "existing_cloudtrail" {
 # AWS-related configuration flags (Optional)
 #
 # The flags have defaults, so the module can work without these explicitly set
-variable "aws_flags" {
-  description = "(Optional) AWS-related Configuration flags"
-  type = object({
-    s3_force_destroy              = bool
-    enable_logging                = bool
-    enable_log_file_validation    = bool
-    include_global_service_events = bool
-    is_multi_region_trail         = bool
-  })
+variable "s3_force_destroy" {
+  description = "Whether or not to allow force destroying the bucket while it has contents."
+  type        = bool
+  default     = false
+}
 
-  default = {
-    s3_force_destroy              = false
-    enable_logging                = true
-    enable_log_file_validation    = true
-    include_global_service_events = true
-    is_multi_region_trail         = true
-  }
+variable "enable_logging" {
+  description = "Whether to enable CloudTrail logging or not."
+  type        = bool
+  default     = true
+}
+
+variable "enable_log_file_validation" {
+  description = "Whether to enable CloudTrail log file validation or not."
+  type        = bool
+  default     = true
+}
+
+variable "include_global_service_events" {
+  description = "Whether or not to include global service events."
+  type        = bool
+  default     = true
+}
+
+variable "is_multi_region_trail" {
+  description = "Whether or not to create trail as multi-region."
+  type        = bool
+  default     = true
 }
 
 # AWS-related configuration settings (Optional)
 #
 # The settings have defaults, so the module can work without these explicitly set
-variable "aws_optional_conf" {
-  description = "(Optional) AWS-related Configuration settings"
-  type = object({
-    cloudtrail_name        = string
-    iam_role_name          = string
-    sns_topic_name         = string
-    sns_topic_display_name = string
-    sqs_queue_name         = string
-    s3_bucket_name         = string
-    s3_bucket_prefix       = string
-    tags                   = map(string)
-  })
+variable "s3_bucket_name" { # buckets are global, thus the name is NOT optional as 'threatstack-integration' bucket already exists in S3.
+  description = "The name for the S3 bucket to be created. Will be suffixed with 'threatstack-integration' unless s3_suffix is false."
+  type        = string
+}
 
-  default = {
-    cloudtrail_name        = "ThreatStackIntegration"
-    iam_role_name          = "ThreatStackIntegration"
-    sns_topic_name         = "ThreatStackIntegration"
-    sns_topic_display_name = "Threat Stack integration topic."
-    sqs_queue_name         = "ThreatStackIntegration"
-    s3_bucket_name         = "threatstack-integration"
-    s3_bucket_prefix       = "/"
-    tags                   = {}
-  }
+variable "s3_suffix" {
+  description = "Whether or not to include 'threatstack-integration' suffix on S3 bucket name."
+  type        = bool
+  default     = true
+}
+
+variable "cloudtrail_name" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "ThreatStackIntegration"
+}
+
+variable "iam_role_name" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "ThreatStackIntegration"
+}
+
+variable "sns_topic_name" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "ThreatStackIntegration"
+}
+
+variable "sns_topic_display_name" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "Threat Stack integration topic."
+}
+
+variable "sqs_queue_name" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "ThreatStackIntegration"
+}
+
+variable "s3_bucket_prefix" {
+  description = "(optional) describe your variable"
+  type        = string
+  default     = "/"
+}
+
+variable "tags" {
+  description = "(optional) describe your variable"
+  type        = map(string)
+  default     = {}
 }
