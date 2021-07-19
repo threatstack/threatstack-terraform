@@ -1,13 +1,13 @@
 // Setup SQS
 
-data "aws_iam_policy_document" "example" {
+data "aws_iam_policy_document" "sqs_policy" {
   statement {
     sid       = "Allow-TS-SendMessage"
     actions   = ["sqs:SendMessage"]
-    resources = "*"
+    resources = ["*"]
     condition {
       test     = "ArnEquals"
-      values   = "aws:SourceArn"
+      values   = ["aws:SourceArn"]
       variable = aws_sns_topic.sns.arn
     }
   }
@@ -22,7 +22,7 @@ resource "aws_sqs_queue" "sqs" {
 
 resource "aws_sqs_queue_policy" "sqs" {
   queue_url = aws_sqs_queue.sqs.id
-  policy    = data.template_file.aws_sqs_queue_policy.rendered
+  policy    = data.aws_iam_policy_document.sqs_policy.json
 }
 
 resource "aws_sns_topic_subscription" "sqs" {
