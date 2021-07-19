@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
-    actions   = "s3:GetBucketAcl"
+    actions   = ["s3:GetBucketAcl"]
     resources = local.s3_bucket_arn
   }
 
@@ -22,12 +22,12 @@ data "aws_iam_policy_document" "bucket_policy" {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
-    actions   = "s3:PutObject"
+    actions   = ["s3:PutObject"]
     resources = "${local.s3_bucket_arn}/AWSLogs/${local.account_id}/*"
     condition {
       test     = "StringEquals"
       values   = ["s3:x-amz-acl"]
-      variable = "bucket-owner-full-control"
+      variable = ["bucket-owner-full-control"]
     }
   }
 }

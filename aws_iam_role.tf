@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "role_policy" {
       "sns:ListSubscriptionsByTopic",
       "sns:ListTopics"
     ]
-    resources = "*"
+    resources = ["*"]
     sid       = "ThreatStackPermissions"
   }
   statement {
