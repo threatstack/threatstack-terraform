@@ -1,5 +1,5 @@
 // AWS CloudTrail S3 Bucket
-local {
+locals {
   aws_account_id = var.aws_account_info.account_id
   s3_bucket_arn  = aws_s3_bucket.bucket[0].arn
   bucket_name    = var.s3_suffix ? "${var.s3_bucket_name}-threatstack-integration" : var.s3_bucket_name

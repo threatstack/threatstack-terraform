@@ -1,5 +1,5 @@
 // AWS Iam role for cross account access
-local {
+locals {
   sqs_queue_arn = aws_sqs_queue.sqs.arn
   s3_resource   = var.existing_cloudtrail != null ? var.existing_cloudtrail.s3_bucket_arn : aws_s3_bucket.bucket[0].arn
 }
