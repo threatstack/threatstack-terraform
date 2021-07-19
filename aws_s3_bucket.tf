@@ -23,11 +23,11 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
     actions   = ["s3:PutObject"]
-    resources = "${local.s3_bucket_arn}/AWSLogs/${local.account_id}/*"
+    resources = ["${local.s3_bucket_arn}/AWSLogs/${local.account_id}/*"]
     condition {
       test     = "StringEquals"
       values   = ["s3:x-amz-acl"]
-      variable = ["bucket-owner-full-control"]
+      variable = "bucket-owner-full-control"
     }
   }
 }
