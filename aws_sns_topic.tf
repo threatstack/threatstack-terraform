@@ -3,8 +3,8 @@ data "aws_iam_policy_document" "topic_policy" {
   statement {
     sid       = "AWSCloudTrailSNSPolicy"
     actions   = ["SNS:Publish"]
-    resources = "*"
-    principal {
+    resources = ["*"]
+    principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }

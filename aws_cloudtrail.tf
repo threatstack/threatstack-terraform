@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "ct_cw_role_policy" {
 data "aws_iam_policy_document" "ct_cw_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
-    principal {
+    principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }

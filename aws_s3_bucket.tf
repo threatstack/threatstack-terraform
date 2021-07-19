@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "bucket_policy" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
   statement {
     sid = "AWSCloudTrailAclCheck"
-    principal {
+    principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "bucket_policy" {
 
   statement {
     sid = "AWSCloudTrailWrite"
-    principal {
+    principals {
       type        = "Service"
       identifiers = ["cloudtrail.amazonaws.com"]
     }
