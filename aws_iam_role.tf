@@ -13,8 +13,8 @@ data "aws_iam_policy_document" "assume_role_policy" {
     }
     condition {
       test     = "StringEquals"
-      values   = ["sts:ExternalId"]
-      variable = var.threatstack.external_id
+      variable = ["sts:ExternalId"]
+      values   = var.threatstack.external_id
     }
   }
 }
