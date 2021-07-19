@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
     actions   = ["s3:GetBucketAcl"]
-    resources = local.s3_bucket_arn
+    resources = [local.s3_bucket_arn]
   }
 
   statement {
