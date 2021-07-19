@@ -39,7 +39,7 @@ output "s3_bucket_id" {
 }
 
 output "s3_bucket_arn" {
-  value = var.existing_cloudtrail == null ? aws_s3_bucket.bucket[0].arn : var.existing_cloudtrail.s3_bucket_arn
+  value = coalesce((length(aws_s3_bucket.bucket) > 0 ? aws_s3_bucket.bucket[0].arn : ""), (var.existing_cloudtrail != null ? var.existing_cloudtrail.s3_bucket_arn : ""))
 }
 
 output "iam_role_name" {
