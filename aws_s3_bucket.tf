@@ -1,8 +1,10 @@
 // AWS CloudTrail S3 Bucket
+data "aws_caller_identity" "current" {}
 locals {
-  aws_account_id = var.aws_account_info.account_id
-  s3_bucket_arn  = aws_s3_bucket.bucket[0].arn
-  bucket_name    = var.s3_suffix ? "${var.s3_bucket_name}-threatstack-integration" : var.s3_bucket_name
+
+  account_id    = data.aws_caller_identity.current
+  s3_bucket_arn = aws_s3_bucket.bucket[0].arn
+  bucket_name   = var.s3_suffix ? "${var.s3_bucket_name}-threatstack-integration" : var.s3_bucket_name
 }
 
 data "aws_iam_policy_document" "bucket_policy" {
@@ -24,7 +26,7 @@ data "aws_iam_policy_document" "bucket_policy" {
       identifiers = ["cloudtrail.amazonaws.com"]
     }
     actions   = "s3:PutObject"
-    resources = "${s3_bucket_arn}/AWSLogs/${aws_account_id}/*"
+    resources = "${local.s3_bucket_arn}/AWSLogs/${local.account_id}/*"
     condition {
       test     = "StringEquals"
       values   = ["s3:x-amz-acl"]
