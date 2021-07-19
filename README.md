@@ -1,312 +1,84 @@
-# tf_threatstack_control_plane_monitoring_integration
-Setup Threat Stack <-> Control Plane Monitoring integration module
-
-This module provides the ability to define the Threat Stack integration infrastructure via Terraform.  Currently only AWS Cloudtrail is supported, and it automates the [AWS Manual Integration Setup](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup)
-
-This module will create and manage the following:
-
-* AWS CloudTrail
-  * multi-region trail
-  * records global service events
-  * S3 bucket to store events
-    * enables log file validation
-  * CloudTrail to Cloudwatch logging
-* AWS SNS topic to forward CloudTrail events to
-* AWS SQS queue Threat Stack will check for events
-* Cross account IAM role for Threat Stack
-
-## Dependencies
-
-This Terraform module currently depends on the following providers as dependencies:
-
-* `template` ~> 2.1
-* `aws` ~> 2.0
-
-## Usage
-> **This version of the module is compatible with Terraform 0.12+.**  Terraform 0.11 and earlier are not supported, and this module will not work. For a pre-0.12-compatible version of this module, see [v1.0.0 of this module](https://github.com/threatstack/threatstack-terraform/tree/v1.0.0).
-
-To use, a user-created module should be defined that _imports_ this module (via the `source` parameter on the `module` setting.  Terraform will download and use the source module with the `terraform init` command, so there is no need to download it separately for use.  The minimum configuration for the user would look as follows (Be sure to adjust the git ref in the source value appropriately):
-
-```hcl
-module "threatstack_aws_integration" { # THe name of the module here is arbitrary and can be whatever makes it easily identifiable to the end-user
-  source                        = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  threatstack = {
-    account_id        = "<THREATSTACK_AWS_ACCOUNT_ID>"
-    external_id       = "<THREATSTACK_AWS_EXTERNAL_ID>"
-  }
-
-  aws_account_info = {
-    account_id        = "<AWS_ACCOUNT_ID>"
-    region            = "us-east-1"
-  }
-}
-```
-
-## Threat Stack Setup
-
-In Threat Stack click `Add Account` under _AWS Accounts_ fill in the relevant output values on the _Integrations_ page under _Settings_ and get the Threat Stack _Account ID_ and _External ID_.  Use these values for the `threatstack.account_id` and `threatstack.external_id` input variables (see below).  Run Terraform and get the outputs from it.
-
-![Terraform output](https://github.com/threatstack/threatstack-terraform/raw/master/doc/terraform_output.png "Terraform output")
-
-Record the Terraform output values, and use them to complete the configuration of the Threat Stack platform's side integration.  See sections 3 & 6 of the [AWS Manual Integration Setup](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) page for details.
-
-## Variables
-
-The module's input variables are defined in their own Terraform variable objects.  They are as follows:
-
-* ___threatstack:___ **(REQUIRED)** Threat Stack-specific settings to deploy the integration.  The defaults are null, so the integration will fail if not set.
-
-* ___aws_account_info:___ **(REQUIRED)** AWS account specifics to deploy the integration.  The defaults are null, so the integration will fail if not set.
-
-* ___aws_flags:___ **(Optional)** The flags have defaults, so the module can work without these explicitly set.
-
-* ___aws_optional_conf:___ **(Optional)** The settings have defaults, so the module can work without these explicitly set.
-
-
-#### Threat Stack configuration
-
-All of the Threat Stack configuration is required.  Not explicitly defining these values when using this module will cause the integration to not work as expected.
-
-The Threat Stack configuration is defined as follows:
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  #...
-
-  # Strings generated from the Threat Stack Add Account page
-  threatstack = {
-
-    account_id  = string 
-    external_id = string
-
-  }
-
-  #...
-
-}
-```
-
-* ___threatstack.account_id:___ Threat Stack account ID associated with the Threat Stack org.  Used to find remote state information and is prepended to bucket names.
-
-* ___threatstack.external_id:___ Account ID, used for CloudTrail integration.
-
-
-#### AWS configuration
-
-This Terraform input variable is split into 4 sections: required settings, flag settings, optional settings, and how to use an existing cloudtrail with this module.
-
-##### Required settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-    # ...
-
-  aws_account_info = {
-
-    account_id   = string
-    region       = string
-  }
-
-  #...
-
-}
-```
-
-* ___aws_account_info.account_id:___ Account ID, used for CloudTrail integration.
-
-* ___aws_account_info.region:___ AWS region.  Used to find remote state.
-
-##### Flag settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  # ...
-
-  aws_flags = {
-
-    enable_logging                = bool # Defaults to `true`
-    enable_log_file_validation    = bool # Defaults to `true`
-    include_global_service_events = bool # Defaults to `true`
-    is_multi_region_trail         = bool # Defaults to `true`
-    s3_force_destroy              = bool # Defaults to `false`
-  }
-    
-  #...
-
-}
-
-```
-* ___aws_flags.enable_logging (optional):___ Enable logging, set to 'false' to pause logging.
-
-* ___aws_flags.enable_log_file_validation (optional):___ Create signed digest file to validated contents of logs.
-
-* ___aws_flags.include_global_service_events (optional):___ Include evnets from global services such as IAM.
-
-* ___aws_flags.is_multi_region_trail (optional):___ Whether the trail is created in all regions or just the current region.
-
-* ___aws_flags.s3_force_destroy (optional):___ Bucket destroy will fail if the bucket is not empty.  Set to `"true"` if you REALLY want to destroy logs on teardown.
-
-##### Optional settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  # ...
-
-  aws_optional_conf = {
-
-    cloudtrail_name         = string # Defaults to "ThreatStackIntegration"
-    iam_role_name           = string # Defaults to "ThreatStackIntegration"
-    sns_topic_name          = string # Defaults to "ThreatStackIntegration"
-    sns_topic_display_name  = string # Defaults to "Threat Stack integration topic."
-    sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
-    s3_bucket_name          = string # Defaults to "threatstack-integration"
-    s3_bucket_prefix        = string # Defaults to "/"
-    tags                    = map    # Defaults to {} (empty map)
-  }
-
-  #...
-
-}
-```
-
-* ___aws_optional_conf.cloudtrail_name (optional):___ Name of CloudTrail trail.
-
-* ___aws_optional_conf.iam_role_name (optional):___ Name of cross account IAM role gating access for Threat Stack to AWS environment.
-
-* ___aws_optional_conf.sns_topic_name (optional):___ Name of SNS topic used by CloudTrail.
-
-* ___aws_optional_conf.sns_topic_display_name (optional):___ SNS topic display name.
-
-* ___aws_optional_conf.sqs_queue_name (optional):___ Name of SQS queue to forward events to.
-
-* ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
-
-* ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
-
-* ___aws_optional_conf.tags(optional):___ Map of tags to apply to all resources.
-
-##### Using existing cloudtrail infrastructure
-
-If you already have your Cloudtrail set up, with its corresponding cloudwatch log group and S3 bucket, you can configure this module to use this infrastructure by setting the following settings. The module will still set up the SQS and SNS resources required, as well as the various IAM resources to allow for the integration to talk to Threat Stack's platform.
-
-> **NOTE:**
-> Do not define the ___existing_cloudtrail___ variable at all if you want this module to manage all of the resources for the Threat Stack integration. By default, the ___existing_cloudtrail___ variable is set to `null`
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  # ...
-
-  existing_cloudtrail = {
-
-    cloudtrail_arn = string # The ARN of the existing cloudtrail with which you want to integrate.
-    s3_bucket_arn  = string # The ARN of the existing cloudtrail's S3 bucket
-  }
-
-  # ...
-
-}
-```
-
-* ___existing_cloudtrail.cloudtrail_arn (required if using existing cloudtrail):___ Only passed in so that it can be used as an output. Nothing in the integration directly refers to the existing cloudtrail itself.
-
-* ___existing_cloudtrail.s3_bucket_arn (required if using existing cloudtrail):___ Used by the IAM role that links the Threat Stack account to the bucket with that contains the needed data.
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.0 |
+| <a name="requirement_template"></a> [template](#requirement\_template) | ~> 2.1 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_cloudtrail.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudtrail) | resource |
+| [aws_cloudwatch_log_group.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_iam_role.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_s3_bucket.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_policy.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_sns_topic.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic_policy.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
+| [aws_sns_topic_subscription.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
+| [aws_sqs_queue.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_sqs_queue_policy.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.ct_cw_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.ct_cw_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.topic_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_existing_cloudtrail"></a> [existing\_cloudtrail](#input\_existing\_cloudtrail) | (Optional) Uses existing cloudtrail infrastructure instead of creating all new resources | <pre>object({<br>    cloudtrail_arn = string<br>    s3_bucket_arn  = string<br>  })</pre> | n/a | yes |
+| <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | The name for the S3 bucket to be created. Will be suffixed with 'threatstack-integration' unless s3\_suffix is false. | `string` | n/a | yes |
+| <a name="input_threatstack"></a> [threatstack](#input\_threatstack) | (REQUIRED) Threat Stack-related Configuration | <pre>object({<br>    # Required parameters<br>    account_id  = string<br>    external_id = string<br>  })</pre> | n/a | yes |
+| <a name="input_cloudtrail_name"></a> [cloudtrail\_name](#input\_cloudtrail\_name) | (optional) describe your variable | `string` | `"ThreatStackIntegration"` | no |
+| <a name="input_enable_log_file_validation"></a> [enable\_log\_file\_validation](#input\_enable\_log\_file\_validation) | Whether to enable CloudTrail log file validation or not. | `bool` | `true` | no |
+| <a name="input_enable_logging"></a> [enable\_logging](#input\_enable\_logging) | Whether to enable CloudTrail logging or not. | `bool` | `true` | no |
+| <a name="input_iam_role_name"></a> [iam\_role\_name](#input\_iam\_role\_name) | (optional) describe your variable | `string` | `"ThreatStackIntegration"` | no |
+| <a name="input_include_global_service_events"></a> [include\_global\_service\_events](#input\_include\_global\_service\_events) | Whether or not to include global service events. | `bool` | `true` | no |
+| <a name="input_is_multi_region_trail"></a> [is\_multi\_region\_trail](#input\_is\_multi\_region\_trail) | Whether or not to create trail as multi-region. | `bool` | `true` | no |
+| <a name="input_s3_bucket_prefix"></a> [s3\_bucket\_prefix](#input\_s3\_bucket\_prefix) | (optional) describe your variable | `string` | `"/"` | no |
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Whether or not to allow force destroying the bucket while it has contents. | `bool` | `false` | no |
+| <a name="input_s3_suffix"></a> [s3\_suffix](#input\_s3\_suffix) | Whether or not to include 'threatstack-integration' suffix on S3 bucket name. | `bool` | `true` | no |
+| <a name="input_sns_topic_display_name"></a> [sns\_topic\_display\_name](#input\_sns\_topic\_display\_name) | (optional) describe your variable | `string` | `"Threat Stack integration topic."` | no |
+| <a name="input_sns_topic_name"></a> [sns\_topic\_name](#input\_sns\_topic\_name) | (optional) describe your variable | `string` | `"ThreatStackIntegration"` | no |
+| <a name="input_sqs_queue_name"></a> [sqs\_queue\_name](#input\_sqs\_queue\_name) | (optional) describe your variable | `string` | `"ThreatStackIntegration"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | (optional) describe your variable | `map(string)` | `{}` | no |
 
 ## Outputs
 
-### Exposing this module's outputs to the rest of your terraform definitions
-
-As of Terraform 0.12, there is a [known change](https://github.com/hashicorp/terraform/issues/1940#issuecomment-513055570) in the structure of the terraform state file format that makes child module outputs inaccessible to tools like `terraform show`, `terraform output`, or via remote state data sources. A child module is any resource defined with the `module "<name>" { ... }` resource directive.
-
-In order to refer to any of the outputs of this module outside of the implementing module, they must be wrapped as new outputs defined in the implementing module itself.
-
-One way to do this (see below) is to define your infrastructure in your `main.tf`, and define your wrapper outputs in an `outputs.tf` file.
-
-#### Example implementation
-
-This is the file that implements the threatstack-terraform module with your account-specific information:
-
-`<your_module_directory>/main.tf:`
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  aws_account_info = {
-    # ...
-  }
-
-  aws_flags = {
-    # ...
-  }
-
-  aws_optional_conf = {
-    # ...
-  }
-}
-```
-
-Using the name you gave to the instance of the threatstack-terraform module above, the output is defined as:
-
-`<your_module_directory>/outputs.tf:`
-```hcl
-output "threatstack-aws-integration-cloudtrail-arn" {
-  value = "${module.threatstack_aws_integration.cloudtrail_arn}"
-}
-```
-
-You can wrap any of the threatstack-terraform module outputs listed below in the same way.
-
-#### Important outputs to expose to complete the integration
-
-There are three output values that are needed to complete the integration by defining them in the Threat Stack Platform administrative settings (see the [official documentation](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) for more information), once the terraform module has been applid in the customer infrastructure. They are:
-
-* ___iam_role_arn___
-* ___s3_bucket_id___
-* ___sqs_queue_source___
-
-It is recommended that these outputs be rewrapped in outputs defined in your implementing module (as seen in the previous example), at a minimum. This will allow you to use the [`terraform output`](https://www.terraform.io/docs/commands/output.html) CLI command to get the value generated by this module.
-
-### List of all outputs from this module
-
-> **NOTE:**
-> You can also see this list in this module's `outputs.tf` file.
-
-> If you are defining the ___existing_cloudtrail___ block, many of these outputs will be set to `""` (an empty string).
-
-* ___cloudtrail_arn:___ ARN of CloudTrail.
-
-* ___cloudtrail_home_region:___ Home region for CloudTrail
-
-* ___cloudtrail_id:___ CloudTrail ID. Name of CloudTrail without full ARN string.
-
-* ___cloudwatch_log_group_arn:___ ARN of CloudWatch log group for cloudTrail events.
-
-* ___iam_role_arn:___ ARN of cross account IAM role granting Threat Stack access to environment.  **(Enter this value into Threat Stack when setting up.)**
-
-* ___iam_role_name:___ Name of cross account IAM role granting Threat Stack access to environment.
-
-* ___iam_role_cloudtrail_arn:___ ARN of IAM role allowing events to be logged to CloudWatch.
-
-* ___iam_role_cloudtrail_name:___ Name of IAM role allowing events to be logged to CloudWatch.
-
-* ___s3_bucket_arn:___ ARN of bucket for CloudTrail events.
-
-* ___s3_bucket_id:___ Name of bucket for CloudTrail events.  **(Enter this value into Threat Stack when setting up.)**
-
-* ___sns_topic_arn:___ ARN of SNS topic where CloudTrail events are forwarded to.
-
-* ___sqs_queue_arn:___ ARN of SQS queue Threat Stack reads events from.
-
-* ___sqs_queue_id:___ SQS queue ID / endpoint.
-
-* ___sqs_queue_source:___ Name of SQS queue Threat Stack reads events from.  **(Enter this value into Threat Stack when setting up.)**
+| Name | Description |
+|------|-------------|
+| <a name="output_cloudtrail_arn"></a> [cloudtrail\_arn](#output\_cloudtrail\_arn) | n/a |
+| <a name="output_cloudtrail_home_region"></a> [cloudtrail\_home\_region](#output\_cloudtrail\_home\_region) | n/a |
+| <a name="output_cloudtrail_id"></a> [cloudtrail\_id](#output\_cloudtrail\_id) | n/a |
+| <a name="output_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#output\_cloudwatch\_log\_group\_arn) | n/a |
+| <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | n/a |
+| <a name="output_iam_role_cloudtrail_arn"></a> [iam\_role\_cloudtrail\_arn](#output\_iam\_role\_cloudtrail\_arn) | n/a |
+| <a name="output_iam_role_cloudtrail_name"></a> [iam\_role\_cloudtrail\_name](#output\_iam\_role\_cloudtrail\_name) | n/a |
+| <a name="output_iam_role_name"></a> [iam\_role\_name](#output\_iam\_role\_name) | n/a |
+| <a name="output_s3_bucket_arn"></a> [s3\_bucket\_arn](#output\_s3\_bucket\_arn) | n/a |
+| <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | n/a |
+| <a name="output_sns_topic_arn"></a> [sns\_topic\_arn](#output\_sns\_topic\_arn) | n/a |
+| <a name="output_sqs_queue_arn"></a> [sqs\_queue\_arn](#output\_sqs\_queue\_arn) | n/a |
+| <a name="output_sqs_queue_id"></a> [sqs\_queue\_id](#output\_sqs\_queue\_id) | n/a |
+| <a name="output_sqs_queue_source"></a> [sqs\_queue\_source](#output\_sqs\_queue\_source) | n/a |

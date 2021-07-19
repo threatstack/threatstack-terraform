@@ -1,24 +1,40 @@
 // AWS Cloudtrail
-data "template_file" "aws_iam_cloudtrail_to_cloudwatch_assume_role_policy" {
-  template = file(
-    "${path.module}/aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.tpl",
-  )
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+local {
+  account_id = data.aws_caller_identity.current.account_id
+  region     = data.aws_region.current
 }
 
-data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
-  template = file("${path.module}/aws_iam_cloudtrail_to_cloudwatch_policy.tpl")
-  vars = {
-    aws_account_id      = var.aws_account_info.account_id
-    aws_cloudtrail_name = var.aws_optional_conf.cloudtrail_name
-    aws_region          = var.aws_account_info.region
+data "aws_iam_policy_document" "ct_cw_role_policy" {
+  statement {
+    sid = "AWSCloudTrailCreatePutLogStream"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:${local.region}:${local.account_id}:log-group:/aws/cloudtrail/${var.cloudtrail_name}:log-stream:${local.account_id}_CloudTrail_${local.region}*"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "ct_cw_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principal {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
   }
 }
 
 resource "aws_cloudwatch_log_group" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
-  name = "/aws/cloudtrail/${var.aws_optional_conf.cloudtrail_name}"
-  tags = var.aws_optional_conf.tags
+  name = "/aws/cloudtrail/${var.cloudtrail_name}"
+  tags = var.tags
 
   depends_on = [
     aws_iam_role_policy.ct,
@@ -29,10 +45,10 @@ resource "aws_cloudwatch_log_group" "ct" {
 resource "aws_iam_role" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
-  name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
-  tags               = var.aws_optional_conf.tags
+  name = "${var.cloudtrail_name}-CloudTrailToCloudWatch"
+  tags = var.tags
 
-  assume_role_policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.rendered
+  assume_role_policy = data.aws_iam_policy_document.ct_cw_assume_role_policy.json
 }
 
 resource "aws_iam_role_policy" "ct" {
@@ -40,21 +56,21 @@ resource "aws_iam_role_policy" "ct" {
 
   name   = "CloudTrailToCloudWatch"
   role   = aws_iam_role.ct[0].id
-  policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_policy.rendered
+  policy = data.aws_iam_policy_document.ct_cw_role_policy.json
 }
 
 resource "aws_cloudtrail" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
-  name                          = var.aws_optional_conf.cloudtrail_name
-  tags                          = var.aws_optional_conf.tags
+  name = var.cloudtrail_name
+  tags = var.tags
 
   s3_bucket_name                = aws_s3_bucket.bucket[0].id
-  enable_logging                = var.aws_flags.enable_logging
-  enable_log_file_validation    = var.aws_flags.enable_log_file_validation
-  include_global_service_events = var.aws_flags.include_global_service_events
-  is_multi_region_trail         = var.aws_flags.is_multi_region_trail
-  cloud_watch_logs_group_arn    = "${replace(aws_cloudwatch_log_group.ct[0].arn, "/:\\*$/", "")}:*"
+  enable_logging                = var.enable_logging
+  enable_log_file_validation    = var.enable_log_file_validation
+  include_global_service_events = var.include_global_service_events
+  is_multi_region_trail         = var.is_multi_region_trail
+  cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.ct[0].arn}:*"
   cloud_watch_logs_role_arn     = aws_iam_role.ct[0].arn
   sns_topic_name                = aws_sns_topic.sns.arn
   depends_on                    = [aws_s3_bucket_policy.bucket]

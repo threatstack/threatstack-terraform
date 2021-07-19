@@ -1,15 +1,21 @@
 // Setup SQS
 
-data "template_file" "aws_sqs_queue_policy" {
-  template = file("${path.module}/aws_sqs_queue_policy.tpl")
-  vars = {
-    sns_arn = aws_sns_topic.sns.arn
+data "aws_iam_policy_document" "example" {
+  statement {
+    sid       = "Allow-TS-SendMessage"
+    actions   = ["sqs:SendMessage"]
+    resources = "*"
+    condition {
+      test     = "ArnEquals"
+      values   = "aws:SourceArn"
+      variable = aws_sns_topic.sns.arn
+    }
   }
 }
 
 resource "aws_sqs_queue" "sqs" {
-  name       = var.aws_optional_conf.sqs_queue_name
-  tags       = var.aws_optional_conf.tags
+  name = var.sqs_queue_name
+  tags = var.tags
 
   depends_on = [aws_sns_topic_policy.sns]
 }

@@ -1,19 +1,26 @@
 // SNS topic
-
-data "template_file" "aws_sns_topic_policy" {
-  template = file("${path.module}/aws_sns_topic_policy.tpl")
+data "aws_iam_policy_document" "topic_policy" {
+  statement {
+    sid       = "AWSCloudTrailSNSPolicy"
+    actions   = ["SNS:Publish"]
+    resources = "*"
+    principal {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
 }
 
 resource "aws_sns_topic" "sns" {
-  name         = var.aws_optional_conf.sns_topic_name
-  tags         = var.aws_optional_conf.tags
+  name = var.sns_topic_name
+  tags = var.tags
 
-  display_name = var.aws_optional_conf.sns_topic_display_name
+  display_name = var.sns_topic_display_name
   depends_on   = [aws_iam_role.role]
 }
 
 resource "aws_sns_topic_policy" "sns" {
   arn    = aws_sns_topic.sns.arn
-  policy = data.template_file.aws_sns_topic_policy.rendered
+  policy = data.aws_iam_policy_document.topic_policy.json
 }
 

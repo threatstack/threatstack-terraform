@@ -7,7 +7,7 @@
 // Example:
 //
 //    output "my_modules_output_for_cloudtrail_id" {
-//      value = "${module.threatstack_aws_integration.cloudtrail_id}"
+//      value = module.threatstack_aws_integration.cloudtrail_id
 //    }
 
 output "cloudtrail_id" {

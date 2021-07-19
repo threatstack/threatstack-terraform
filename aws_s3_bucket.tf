@@ -1,37 +1,61 @@
 // AWS CloudTrail S3 Bucket
-data "template_file" "aws_s3_bucket_policy" {
+local {
+  aws_account_id = var.aws_account_info.account_id
+  s3_bucket_arn  = aws_s3_bucket.bucket[0].arn
+  bucket_name    = var.s3_suffix ? "${var.s3_bucket_name}-threatstack-integration" : var.s3_bucket_name
+}
+
+data "aws_iam_policy_document" "bucket_policy" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
+  statement {
+    sid = "AWSCloudTrailAclCheck"
+    principal {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = "s3:GetBucketAcl"
+    resources = "${s3_bucket_arn}"
+  }
 
-  template = file("${path.module}/aws_s3_bucket_policy.tpl")
-
-  vars = {
-    aws_account_id = var.aws_account_info.account_id
-    s3_bucket_arn  = aws_s3_bucket.bucket[0].arn
+  statement {
+    sid = "AWSCloudTrailWrite"
+    principal {
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    actions   = "s3:PutObject"
+    resources = "${s3_bucket_arn}/AWSLogs/${aws_account_id}/*"
+    condition {
+      test     = "StringEquals"
+      values   = ["s3:x-amz-acl"]
+      variable = "bucket-owner-full-control"
+    }
   }
 }
+
 
 resource "aws_s3_bucket" "bucket" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
   # This is to keep things consistent and prevent conflicts across
   # environments.
-  bucket = var.aws_optional_conf.s3_bucket_name
+  bucket = local.bucket_name
   acl    = "private"
 
   versioning {
     enabled = "false"
   }
-  force_destroy = var.aws_flags.s3_force_destroy
+  force_destroy = var.s3_force_destroy
 
-  tags          = var.aws_optional_conf.tags
+  tags = var.tags
 
-  depends_on    = [aws_sns_topic_subscription.sqs]
+  depends_on = [aws_sns_topic_subscription.sqs]
 }
 
 resource "aws_s3_bucket_policy" "bucket" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
   bucket = aws_s3_bucket.bucket[0].id
-  policy = data.template_file.aws_s3_bucket_policy[0].rendered
+  policy = data.aws_iam_policy_document.bucket_policy[0].json
 }
 
