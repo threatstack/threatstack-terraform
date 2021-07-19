@@ -7,8 +7,8 @@ data "aws_iam_policy_document" "sqs_policy" {
     resources = ["*"]
     condition {
       test     = "ArnEquals"
-      variable   = ["aws:SourceArn"]
-      values = aws_sns_topic.sns.arn
+      variable = "aws:SourceArn"
+      values   = [aws_sns_topic.sns.arn]
     }
   }
 }

@@ -26,8 +26,8 @@ data "aws_iam_policy_document" "bucket_policy" {
     resources = ["${local.s3_bucket_arn}/AWSLogs/${local.account_id}/*"]
     condition {
       test     = "StringEquals"
-      variable   = ["s3:x-amz-acl"]
-      values = "bucket-owner-full-control"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
     }
   }
 }
