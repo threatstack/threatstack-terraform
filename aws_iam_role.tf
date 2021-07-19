@@ -16,7 +16,7 @@ data "template_file" "aws_iam_role_policy" {
     # This checks to see if a new bucket exists (null check)
     # If it is null, just give a null so coalesce skips it
     # If not null, return the arn of the bucket, which is what we really need
-    s3_resource   = coalesce((length(aws_s3_bucket.bucket) > 0 ? aws_s3_bucket.bucket[0].arn : ""), (var.existing_cloudtrail != null ? var.existing_cloudtrail.s3_bucket_arn : ""))
+    s3_resource   = var.existing_cloudtrail != null ? var.existing_cloudtrail.s3_bucket_arn : aws_s3_bucket.bucket.arn
   }
 }
 
