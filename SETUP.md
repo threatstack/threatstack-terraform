@@ -51,18 +51,6 @@ In Threat Stack click `Add Account` under _AWS Accounts_ fill in the relevant ou
 
 Record the Terraform output values, and use them to complete the configuration of the Threat Stack platform's side integration.  See sections 3 & 6 of the [AWS Manual Integration Setup](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) page for details.
 
-## Variables
-
-The module's input variables are defined in their own Terraform variable objects.  They are as follows:
-
-* ___threatstack:___ **(REQUIRED)** Threat Stack-specific settings to deploy the integration.  The defaults are null, so the integration will fail if not set.
-
-* ___aws_account_info:___ **(REQUIRED)** AWS account specifics to deploy the integration.  The defaults are null, so the integration will fail if not set.
-
-* ___aws_flags:___ **(Optional)** The flags have defaults, so the module can work without these explicitly set.
-
-* ___aws_optional_conf:___ **(Optional)** The settings have defaults, so the module can work without these explicitly set.
-
 
 #### Threat Stack configuration
 
@@ -92,107 +80,6 @@ module "threatstack_aws_integration" {
 * ___threatstack.account_id:___ Threat Stack account ID associated with the Threat Stack org.  Used to find remote state information and is prepended to bucket names.
 
 * ___threatstack.external_id:___ Account ID, used for CloudTrail integration.
-
-
-#### AWS configuration
-
-This Terraform input variable is split into 4 sections: required settings, flag settings, optional settings, and how to use an existing cloudtrail with this module.
-
-##### Required settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-    # ...
-
-  aws_account_info = {
-
-    account_id   = string
-    region       = string
-  }
-
-  #...
-
-}
-```
-
-* ___aws_account_info.account_id:___ Account ID, used for CloudTrail integration.
-
-* ___aws_account_info.region:___ AWS region.  Used to find remote state.
-
-##### Flag settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  # ...
-
-  aws_flags = {
-
-    enable_logging                = bool # Defaults to `true`
-    enable_log_file_validation    = bool # Defaults to `true`
-    include_global_service_events = bool # Defaults to `true`
-    is_multi_region_trail         = bool # Defaults to `true`
-    s3_force_destroy              = bool # Defaults to `false`
-  }
-    
-  #...
-
-}
-
-```
-* ___aws_flags.enable_logging (optional):___ Enable logging, set to 'false' to pause logging.
-
-* ___aws_flags.enable_log_file_validation (optional):___ Create signed digest file to validated contents of logs.
-
-* ___aws_flags.include_global_service_events (optional):___ Include evnets from global services such as IAM.
-
-* ___aws_flags.is_multi_region_trail (optional):___ Whether the trail is created in all regions or just the current region.
-
-* ___aws_flags.s3_force_destroy (optional):___ Bucket destroy will fail if the bucket is not empty.  Set to `"true"` if you REALLY want to destroy logs on teardown.
-
-##### Optional settings
-
-```hcl
-module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
-
-  # ...
-
-  aws_optional_conf = {
-
-    cloudtrail_name         = string # Defaults to "ThreatStackIntegration"
-    iam_role_name           = string # Defaults to "ThreatStackIntegration"
-    sns_topic_name          = string # Defaults to "ThreatStackIntegration"
-    sns_topic_display_name  = string # Defaults to "Threat Stack integration topic."
-    sqs_queue_name          = string # Defaults to "ThreatStackIntegration"
-    s3_bucket_name          = string # Defaults to "threatstack-integration"
-    s3_bucket_prefix        = string # Defaults to "/"
-    tags                    = map    # Defaults to {} (empty map)
-  }
-
-  #...
-
-}
-```
-
-* ___aws_optional_conf.cloudtrail_name (optional):___ Name of CloudTrail trail.
-
-* ___aws_optional_conf.iam_role_name (optional):___ Name of cross account IAM role gating access for Threat Stack to AWS environment.
-
-* ___aws_optional_conf.sns_topic_name (optional):___ Name of SNS topic used by CloudTrail.
-
-* ___aws_optional_conf.sns_topic_display_name (optional):___ SNS topic display name.
-
-* ___aws_optional_conf.sqs_queue_name (optional):___ Name of SQS queue to forward events to.
-
-* ___aws_optional_conf.s3_bucket_name (optional):___ Name of bucket to create to store logs.  Pay attention to the fact that account name will be prepended to the provided bucket name to help prevent name collisions.
-
-* ___aws_optional_conf.s3_bucket_prefix (optional):___ S3 prefix path for logs.  Useful is using a bucket used by other services. (Not recommended)
-
-* ___aws_optional_conf.tags(optional):___ Map of tags to apply to all resources.
 
 ##### Using existing cloudtrail infrastructure
 
