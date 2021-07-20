@@ -77,43 +77,43 @@ variable "s3_suffix" {
 }
 
 variable "cloudtrail_name" {
-  description = "(optional) describe your variable"
+  description = "Name of the CloudTrail."
   type        = string
   default     = "ThreatStackIntegration"
 }
 
 variable "iam_role_name" {
-  description = "(optional) describe your variable"
+  description = "Name of the cross account IAM role."
   type        = string
   default     = "ThreatStackIntegration"
 }
 
 variable "sns_topic_name" {
-  description = "(optional) describe your variable"
+  description = "Name of the SNS topic."
   type        = string
   default     = "ThreatStackIntegration"
 }
 
 variable "sns_topic_display_name" {
-  description = "(optional) describe your variable"
+  description = "Display name of the SNS topic."
   type        = string
   default     = "Threat Stack integration topic."
 }
 
 variable "sqs_queue_name" {
-  description = "(optional) describe your variable"
+  description = "Name of the SQS queue."
   type        = string
   default     = "ThreatStackIntegration"
 }
 
 variable "s3_bucket_prefix" {
-  description = "(optional) describe your variable"
+  description = "The path prefix of the S3 bucket."
   type        = string
   default     = "/"
 }
 
 variable "tags" {
-  description = "(optional) describe your variable"
+  description = "Any tags to apply to the resources created in this module."
   type        = map(string)
   default     = {}
 }
