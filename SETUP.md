@@ -15,30 +15,22 @@ This module will create and manage the following:
 * AWS SQS queue Threat Stack will check for events
 * Cross account IAM role for Threat Stack
 
-## Dependencies
-
-This Terraform module currently depends on the following providers as dependencies:
-
-* `template` ~> 2.1
-* `aws` ~> 2.0
-
 ## Usage
+> Example is based on the latest version. For example implementation of previous versions, see README in desired release.
+
 > **This version of the module is compatible with Terraform 0.12+.**  Terraform 0.11 and earlier are not supported, and this module will not work. For a pre-0.12-compatible version of this module, see [v1.0.0 of this module](https://github.com/threatstack/threatstack-terraform/tree/v1.0.0).
 
 To use, a user-created module should be defined that _imports_ this module (via the `source` parameter on the `module` setting.  Terraform will download and use the source module with the `terraform init` command, so there is no need to download it separately for use.  The minimum configuration for the user would look as follows (Be sure to adjust the git ref in the source value appropriately):
 
 ```hcl
-module "threatstack_aws_integration" { # THe name of the module here is arbitrary and can be whatever makes it easily identifiable to the end-user
-  source                        = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+module "threatstack_aws_integration" {
+  source = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+
+  s3_bucket_name   = "test"
 
   threatstack = {
-    account_id        = "<THREATSTACK_AWS_ACCOUNT_ID>"
-    external_id       = "<THREATSTACK_AWS_EXTERNAL_ID>"
-  }
-
-  aws_account_info = {
-    account_id        = "<AWS_ACCOUNT_ID>"
-    region            = "us-east-1"
+    account_id  = var.threatstack_account_id
+    external_id = var.threatstack_external_id
   }
 }
 ```
@@ -52,7 +44,7 @@ In Threat Stack click `Add Account` under _AWS Accounts_ fill in the relevant ou
 Record the Terraform output values, and use them to complete the configuration of the Threat Stack platform's side integration.  See sections 3 & 6 of the [AWS Manual Integration Setup](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) page for details.
 
 
-#### Threat Stack configuration
+### Threat Stack configuration
 
 All of the Threat Stack configuration is required.  Not explicitly defining these values when using this module will cause the integration to not work as expected.
 
@@ -66,10 +58,8 @@ module "threatstack_aws_integration" {
 
   # Strings generated from the Threat Stack Add Account page
   threatstack = {
-
     account_id  = string 
     external_id = string
-
   }
 
   #...
@@ -81,7 +71,8 @@ module "threatstack_aws_integration" {
 
 * ___threatstack.external_id:___ Account ID, used for CloudTrail integration.
 
-##### Using existing cloudtrail infrastructure
+
+### Using existing cloudtrail infrastructure
 
 If you already have your Cloudtrail set up, with its corresponding cloudwatch log group and S3 bucket, you can configure this module to use this infrastructure by setting the following settings. The module will still set up the SQS and SNS resources required, as well as the various IAM resources to allow for the integration to talk to Threat Stack's platform.
 
@@ -95,9 +86,8 @@ module "threatstack_aws_integration" {
   # ...
 
   existing_cloudtrail = {
-
     cloudtrail_arn = string # The ARN of the existing cloudtrail with which you want to integrate.
-    s3_bucket_arn  = string # The ARN of the existing cloudtrail's S3 bucket
+    s3_bucket_arn  = string # The ARN of the existing S3 bucket.
   }
 
   # ...
@@ -119,25 +109,21 @@ In order to refer to any of the outputs of this module outside of the implementi
 
 One way to do this (see below) is to define your infrastructure in your `main.tf`, and define your wrapper outputs in an `outputs.tf` file.
 
-#### Example implementation
+### Example implementation
+> Example is based on the latest version. For example implementation of previous versions, see README in desired release.
 
 This is the file that implements the threatstack-terraform module with your account-specific information:
 
 `<your_module_directory>/main.tf:`
 ```hcl
 module "threatstack_aws_integration" {
-  source      = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
+  source = "github.com/threatstack/threatstack-terraform?ref=<integration_version>"
 
-  aws_account_info = {
-    # ...
-  }
+  s3_bucket_name   = "test"
 
-  aws_flags = {
-    # ...
-  }
-
-  aws_optional_conf = {
-    # ...
+  threatstack = {
+    account_id  = var.threatstack_account_id
+    external_id = var.threatstack_external_id
   }
 }
 ```
@@ -147,13 +133,13 @@ Using the name you gave to the instance of the threatstack-terraform module abov
 `<your_module_directory>/outputs.tf:`
 ```hcl
 output "threatstack-aws-integration-cloudtrail-arn" {
-  value = "${module.threatstack_aws_integration.cloudtrail_arn}"
+  value = module.threatstack_aws_integration.cloudtrail_arn
 }
 ```
 
 You can wrap any of the threatstack-terraform module outputs listed below in the same way.
 
-#### Important outputs to expose to complete the integration
+### Important outputs to expose to complete the integration
 
 There are three output values that are needed to complete the integration by defining them in the Threat Stack Platform administrative settings (see the [official documentation](https://threatstack.zendesk.com/hc/en-us/articles/206512364-AWS-Manual-Integration-Setup) for more information), once the terraform module has been applid in the customer infrastructure. They are:
 
@@ -162,38 +148,3 @@ There are three output values that are needed to complete the integration by def
 * ___sqs_queue_source___
 
 It is recommended that these outputs be rewrapped in outputs defined in your implementing module (as seen in the previous example), at a minimum. This will allow you to use the [`terraform output`](https://www.terraform.io/docs/commands/output.html) CLI command to get the value generated by this module.
-
-### List of all outputs from this module
-
-> **NOTE:**
-> You can also see this list in this module's `outputs.tf` file.
-
-> If you are defining the ___existing_cloudtrail___ block, many of these outputs will be set to `""` (an empty string).
-
-* ___cloudtrail_arn:___ ARN of CloudTrail.
-
-* ___cloudtrail_home_region:___ Home region for CloudTrail
-
-* ___cloudtrail_id:___ CloudTrail ID. Name of CloudTrail without full ARN string.
-
-* ___cloudwatch_log_group_arn:___ ARN of CloudWatch log group for cloudTrail events.
-
-* ___iam_role_arn:___ ARN of cross account IAM role granting Threat Stack access to environment.  **(Enter this value into Threat Stack when setting up.)**
-
-* ___iam_role_name:___ Name of cross account IAM role granting Threat Stack access to environment.
-
-* ___iam_role_cloudtrail_arn:___ ARN of IAM role allowing events to be logged to CloudWatch.
-
-* ___iam_role_cloudtrail_name:___ Name of IAM role allowing events to be logged to CloudWatch.
-
-* ___s3_bucket_arn:___ ARN of bucket for CloudTrail events.
-
-* ___s3_bucket_id:___ Name of bucket for CloudTrail events.  **(Enter this value into Threat Stack when setting up.)**
-
-* ___sns_topic_arn:___ ARN of SNS topic where CloudTrail events are forwarded to.
-
-* ___sqs_queue_arn:___ ARN of SQS queue Threat Stack reads events from.
-
-* ___sqs_queue_id:___ SQS queue ID / endpoint.
-
-* ___sqs_queue_source:___ Name of SQS queue Threat Stack reads events from.  **(Enter this value into Threat Stack when setting up.)**
