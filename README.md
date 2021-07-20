@@ -2,14 +2,14 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.12 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 2.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.0, < 3.45 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.0, < 3.45 |
 
 ## Modules
 
@@ -19,28 +19,28 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_cloudtrail.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudtrail) | resource |
-| [aws_cloudwatch_log_group.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
-| [aws_iam_role.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy.ct](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_iam_role_policy.role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
-| [aws_s3_bucket.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
-| [aws_s3_bucket_policy.bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
-| [aws_sns_topic.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
-| [aws_sns_topic_policy.sns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
-| [aws_sns_topic_subscription.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
-| [aws_sqs_queue.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue) | resource |
-| [aws_sqs_queue_policy.sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sqs_queue_policy) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.ct_cw_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.ct_cw_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.sqs_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.topic_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
+| [aws_cloudtrail.ct](https://registry.terraform.io/providers/-/aws/latest/docs/resources/cloudtrail) | resource |
+| [aws_cloudwatch_log_group.ct](https://registry.terraform.io/providers/-/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_iam_role.ct](https://registry.terraform.io/providers/-/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.role](https://registry.terraform.io/providers/-/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.ct](https://registry.terraform.io/providers/-/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.role](https://registry.terraform.io/providers/-/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_s3_bucket.bucket](https://registry.terraform.io/providers/-/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_policy.bucket](https://registry.terraform.io/providers/-/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_sns_topic.sns](https://registry.terraform.io/providers/-/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic_policy.sns](https://registry.terraform.io/providers/-/aws/latest/docs/resources/sns_topic_policy) | resource |
+| [aws_sns_topic_subscription.sqs](https://registry.terraform.io/providers/-/aws/latest/docs/resources/sns_topic_subscription) | resource |
+| [aws_sqs_queue.sqs](https://registry.terraform.io/providers/-/aws/latest/docs/resources/sqs_queue) | resource |
+| [aws_sqs_queue_policy.sqs](https://registry.terraform.io/providers/-/aws/latest/docs/resources/sqs_queue_policy) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.bucket_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.ct_cw_assume_role_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.ct_cw_role_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.role_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.sqs_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.topic_policy](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/-/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
