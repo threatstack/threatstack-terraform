@@ -1,17 +1,13 @@
 // AWS Cloudtrail
-data "template_file" "aws_iam_cloudtrail_to_cloudwatch_assume_role_policy" {
-  template = file(
-    "${path.module}/aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.tpl",
-  )
-}
 
-data "template_file" "aws_iam_cloudtrail_to_cloudwatch_policy" {
-  template = file("${path.module}/aws_iam_cloudtrail_to_cloudwatch_policy.tpl")
-  vars = {
+locals {
+  aws_iam_cloudtrail_to_cloudwatch_assume_role_policy = file("${path.module}/aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.tpl")
+  aws_iam_cloudtrail_to_cloudwatch_policy_vars = {
     aws_account_id      = var.aws_account_info.account_id
     aws_cloudtrail_name = var.aws_optional_conf.cloudtrail_name
     aws_region          = var.aws_account_info.region
   }
+  aws_iam_cloudtrail_to_cloudwatch_policy = templatefile("${path.module}/aws_iam_cloudtrail_to_cloudwatch_policy.tpl", local.aws_iam_cloudtrail_to_cloudwatch_policy_vars)
 }
 
 resource "aws_cloudwatch_log_group" "ct" {
@@ -29,10 +25,10 @@ resource "aws_cloudwatch_log_group" "ct" {
 resource "aws_iam_role" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
-  name               = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
-  tags               = var.aws_optional_conf.tags
+  name = "${var.aws_optional_conf.cloudtrail_name}-CloudTrailToCloudWatch"
+  tags = var.aws_optional_conf.tags
 
-  assume_role_policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy.rendered
+  assume_role_policy = local.aws_iam_cloudtrail_to_cloudwatch_assume_role_policy
 }
 
 resource "aws_iam_role_policy" "ct" {
@@ -40,14 +36,14 @@ resource "aws_iam_role_policy" "ct" {
 
   name   = "CloudTrailToCloudWatch"
   role   = aws_iam_role.ct[0].id
-  policy = data.template_file.aws_iam_cloudtrail_to_cloudwatch_policy.rendered
+  policy = local.aws_iam_cloudtrail_to_cloudwatch_policy
 }
 
 resource "aws_cloudtrail" "ct" {
   count = var.existing_cloudtrail != null ? 0 : 1 # Don't create this if using an existing cloudtrail
 
-  name                          = var.aws_optional_conf.cloudtrail_name
-  tags                          = var.aws_optional_conf.tags
+  name = var.aws_optional_conf.cloudtrail_name
+  tags = var.aws_optional_conf.tags
 
   s3_bucket_name                = aws_s3_bucket.bucket[0].id
   enable_logging                = var.aws_flags.enable_logging
